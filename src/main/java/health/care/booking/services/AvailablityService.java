@@ -1,9 +1,14 @@
 package health.care.booking.services;
 
+import health.care.booking.respository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class AvailablityService {
+
+    @Autowired
+    UserRepository userRepository;
 
 
     //POST
