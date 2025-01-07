@@ -10,7 +10,7 @@ name: Second Roll Healthcare
 
 on:
   push:
-    branches: [ "development" ]
+    branches: [ "development", "main" ]
   pull_request:
     branches: [ "development" ]
 
