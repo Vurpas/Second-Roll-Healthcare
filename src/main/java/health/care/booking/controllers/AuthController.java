@@ -95,7 +95,6 @@ public class AuthController {
         }
     }
 
-
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request) {
 
@@ -105,11 +104,23 @@ public class AuthController {
                     .status(HttpStatus.CONFLICT)
                     .body("Username is already taken");
         }
+        else if (userService.existsByEmail(request.getEmail())) {
+            return ResponseEntity
+                    .status(HttpStatus.CONFLICT)
+                    .body("Email is already taken");
+        }
 
         // map the registration request to a User entity
         User user = new User();
         user.setUsername(request.getUsername());
         user.setPassword(request.getPassword());
+        user.setFirstName(request.getFirstName());
+        user.setLastName(request.getLastName());
+        user.setEmail(request.getEmail());
+        user.setCity(request.getCity());
+        user.setStreet(request.getStreet());
+        user.setPhoneNumber(request.getPhoneNumber());
+        user.setDateOfBirth(request.getDateOfBirth());
 
         // assign roles
         if (request.getRoles() == null || request.getRoles().isEmpty()) {
