@@ -126,4 +126,8 @@ public class User {
     public void setDateOfBirth(String dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
     }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 }
