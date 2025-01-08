@@ -33,6 +33,10 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    public User updateUser(User user) {
+        return userRepository.save(user);
+    }
+
     public User findByUsername(String username) {
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));

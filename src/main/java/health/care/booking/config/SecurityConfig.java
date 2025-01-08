@@ -46,7 +46,7 @@ public class SecurityConfig {
                         //fyll på här när ni lägger till controllers, vill ni ha rollbaserat
                         // chaina på hasRole eller hasAnyRole
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/user/**").permitAll() // permitAll only while testing without login.
                         .requestMatchers("/auth/**").permitAll()
                         .anyRequest().authenticated()
                 )
