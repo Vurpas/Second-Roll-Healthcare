@@ -13,7 +13,7 @@ public class Appointment {
     private String id;
 
     @DBRef
-    private User patientId;
+    private Optional<User> patientId;
 
     @DBRef
     private User caregiverId;
@@ -36,7 +36,7 @@ public class Appointment {
         this.id = id;
     }
 
-    public User getPatientId() {
+    public Optional<User> getPatientId() {
         return patientId;
     }
 
