@@ -5,6 +5,7 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Document(collection = "appointment")
 public class Appointment {
@@ -39,7 +40,7 @@ public class Appointment {
         return patientId;
     }
 
-    public void setPatientId(User patientId) {
+    public void setPatientId(Optional<User> patientId) {
         this.patientId = patientId;
     }
 
