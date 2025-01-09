@@ -27,10 +27,10 @@ public class AppointmentController {
     return ResponseEntity.ok(appointment);
     }
 
+    // UPDATE: update appointment
 
+    // DELETE: delete appointment
 
-
-
-
+    // GET: get all appointments for a given id (caregiver and patient)
 
 }

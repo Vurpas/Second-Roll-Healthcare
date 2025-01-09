@@ -31,7 +31,7 @@ public class AppointmentService {
         return availability.getAvailableSlots();
     }
 
-    // POST
+    // POST: create appointment
     public Appointment createAppointment(AppointmentRequest appointmentRequest) {
         Optional<Availability> availability = availabilityRepository.findById(appointmentRequest.getAvailabilityId());
         if (availability.isPresent()) {
@@ -40,14 +40,22 @@ public class AppointmentService {
             appointment.setDateTime(appointmentRequest.getAppointmentDate());
             appointment.setStatus(Status.SCHEDULED);
             Optional<User> patientId = userRepository.findById(appointmentRequest.getPatientId());
-            appointment.setPatientId(patientId.get()); // error handling
-            // need to update availability array, match date with array and remove from list
+            appointment.setPatientId(patientId.get()); // error handling is needed here
+            // need to update availability array
+            // loop through array in availability and remove matching date
 
             // Save to database with repository for appointment
             return appointmentRepository.save(appointment);
         } else {
             throw new RuntimeException("Availability for given ID not found");
         }
-
     }
+
+    // EDIT: update appointment
+
+    // DELETE: delete an appointment
+
+    // GET: get all appointments for a given id (caregiver and patient)
+
+
 }
