@@ -1,6 +1,7 @@
 package health.care.booking.controllers;
 
 
+import health.care.booking.dto.AppointmentResponse;
 import health.care.booking.services.AppointmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -19,8 +20,9 @@ public class AppointmentController {
     // POST: create appointment
     @PostMapping()
     @PreAuthorize("hasRole('USER', 'ADMIN')")
+    public ResponseEntity<AppointmentResponse> createAppointment() {
 
-    public ResponseEntity
+    }
 
 
 
