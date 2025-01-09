@@ -1,5 +1,7 @@
 package health.care.booking.dto;
 
+import org.springframework.data.annotation.CreatedDate;
+
 import java.time.LocalDate;
 
 public class CreateFeedbackResponse {
@@ -8,6 +10,7 @@ public class CreateFeedbackResponse {
     //private Appointment appointmentId;
     private String comment;
     private int rating;
+    @CreatedDate
     private LocalDate created_at;
 
 

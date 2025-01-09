@@ -10,6 +10,7 @@ import health.care.booking.respository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -33,7 +34,7 @@ public class FeedbackService {
      //   feedback.setAppointmentId(appointment);
         feedback.setComment(createFeedbackDTO.getComment());
         feedback.setRating(createFeedbackDTO.getRating());
-        feedback.setCreated_at(createFeedbackDTO.getCreated_at());
+        feedback.setCreated_at(LocalDate.now());
 
         return feedbackRepository.save(feedback);
     }
@@ -44,3 +45,4 @@ public List<Feedback> getAllFeedbacks() {
     return feedbackRepository.findAll();
 }
 }
+

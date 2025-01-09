@@ -19,6 +19,8 @@ public class CreateFeedbackDTO {
 
     @Size(min = 1, max = 5)
     private int rating;
+    @CreatedDate
+    private LocalDate created_at;
 
     public LocalDate getCreated_at() {
         return created_at;
@@ -28,8 +30,7 @@ public class CreateFeedbackDTO {
         this.created_at = created_at;
     }
 
-    @CreatedDate
-    private LocalDate created_at;
+
 
 
 
