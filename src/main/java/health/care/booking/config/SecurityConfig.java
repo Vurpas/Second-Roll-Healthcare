@@ -49,7 +49,9 @@ public class SecurityConfig {
                         .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/auth/**").permitAll()
                         //Makes sure only ADMINS can set and change availability
-                        //.requestMatchers("/availability/**").hasRole("USER")
+                        .requestMatchers("/availability/**").hasRole("ADMIN")
+                        //temporary test requestmatcher
+                        //.requestMatchers("/availability/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

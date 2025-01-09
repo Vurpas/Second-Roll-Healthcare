@@ -13,7 +13,7 @@ import java.util.List;
 
 //skall det vara Restcontroller och RequestMapping anotations här?
 @RestController
-@RequestMapping(value ="/availabilities")
+@RequestMapping(value ="/availability")
 public class AvailabilityController {
     //Autowirea availabilityService och AvailabilityRepository?
     @Autowired
@@ -28,6 +28,9 @@ public class AvailabilityController {
     //postmapping anotation?
     @PostMapping("/create")
     //@PreAuthorize("hasRole('USER')")
+
+    // OBS create error handling for unorthorized attempts to create availability
+    // and check that entered availability is not already excisting! OBS
     public ResponseEntity<Availability> createAvailability(@RequestParam String caregiverId, @RequestBody List<LocalDateTime> availabilitySlots){
         Availability availability = availabilityService.createAvailability(caregiverId, availabilitySlots);
         return ResponseEntity.ok(availability);

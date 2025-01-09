@@ -24,6 +24,9 @@ public class AvailabilityService {
     //POST
     //skapa create availability metod
     //behöver caregiverId, och available slots
+
+    // OBS create error handling for unorthorized attempts to create availability
+    // and check that entered availability is not already excisting! OBS
     public Availability createAvailability (String caregiverId, List<LocalDateTime> availabilitySlots) {
 
         User caregiver = userRepository.findById(caregiverId)
