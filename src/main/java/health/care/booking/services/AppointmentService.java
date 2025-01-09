@@ -35,14 +35,24 @@ public class AppointmentService {
     public Appointment createAppointment(AppointmentRequest appointmentRequest) {
         Optional<Availability> availability = availabilityRepository.findById(appointmentRequest.getAvailabilityId());
         if (availability.isPresent()) {
+            Availability currentAvailability = availability.get();
             Appointment appointment = new Appointment();
-            appointment.setCaregiverId(availability.get().getCaregiverId());
+            appointment.setCaregiverId(currentAvailability.getCaregiverId());
             appointment.setDateTime(appointmentRequest.getAppointmentDate());
             appointment.setStatus(Status.SCHEDULED);
             Optional<User> patientId = userRepository.findById(appointmentRequest.getPatientId());
             appointment.setPatientId(patientId.get()); // error handling is needed here
             // need to update availability array
             // loop through array in availability and remove matching date
+
+            List<LocalDateTime> availableSlots = currentAvailability.getAvailableSlots();
+            System.out.println(availableSlots);
+            System.out.println(appointmentRequest.getAppointmentDate());
+            List<LocalDateTime> dates = availableSlots.stream().filter(element -> !element.isEqual(appointmentRequest.getAppointmentDate())).toList();
+            currentAvailability.setAvailableSlots(dates);
+            availabilityRepository.save(currentAvailability);
+            System.out.println(dates);
+
 
             // Save to database with repository for appointment
             return appointmentRepository.save(appointment);
