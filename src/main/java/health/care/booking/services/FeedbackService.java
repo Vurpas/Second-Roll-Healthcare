@@ -30,9 +30,10 @@ public class FeedbackService {
         Feedback feedback = new Feedback();
 
         feedback.setPatientId(user);
-        feedback.setAppointmentId(appointment);
+     //   feedback.setAppointmentId(appointment);
         feedback.setComment(createFeedbackDTO.getComment());
         feedback.setRating(createFeedbackDTO.getRating());
+        feedback.setCreated_at(createFeedbackDTO.getCreated_at());
 
         return feedbackRepository.save(feedback);
     }

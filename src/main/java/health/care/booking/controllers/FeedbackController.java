@@ -1,11 +1,13 @@
 package health.care.booking.controllers;
 
+import health.care.booking.dto.CreateFeedbackDTO;
+import health.care.booking.dto.CreateFeedbackResponse;
 import health.care.booking.models.Feedback;
+import health.care.booking.models.User;
 import health.care.booking.services.FeedbackService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -16,14 +18,14 @@ public class FeedbackController {
     FeedbackService feedbackService;
 
     // Post
-   /* @PostMapping()
-    public ResponseEntity<CreateFeedbackDTO> createFeedback(@RequestBody CreateFeedbackDTO createFeedbackDTO) {
+    @PostMapping()
+    public ResponseEntity<CreateFeedbackResponse> createFeedback(@RequestBody CreateFeedbackDTO createFeedbackDTO) {
         Feedback feedback = feedbackService.createFeedback(createFeedbackDTO);
         User user = feedback.getPatientId();
-        return ResponseEntity.ok().body(new CreateFeedbackDTO(feedback.getId(),user.getId(),user.getUsername(),
-                feedback.getAppointmentId(),feedback.getComment(),feedback.getRating()));
+        return ResponseEntity.ok().body(new CreateFeedbackResponse(feedback.getId(),user.getId(),
+               /* feedback.getAppointmentId(),*/feedback.getComment(),feedback.getRating(),feedback.getCreated_at()));
     }
-    */
+
 
     // Get
     @GetMapping()
