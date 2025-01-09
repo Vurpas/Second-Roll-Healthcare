@@ -46,7 +46,7 @@ public class SecurityConfig {
                         //fyll på här när ni lägger till controllers, vill ni ha rollbaserat
                         // chaina på hasRole eller hasAnyRole
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/user/**").hasAnyRole("ADMIN", "USER")
                         .requestMatchers("/auth/**").permitAll()
                         //Makes sure only ADMINS can set and change availability
                         .requestMatchers("/availability/**").hasRole("ADMIN")

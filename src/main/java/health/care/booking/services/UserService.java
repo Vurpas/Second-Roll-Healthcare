@@ -1,7 +1,9 @@
 package health.care.booking.services;
 
 
+import health.care.booking.dto.UpdateUserDTO;
 import health.care.booking.exceptions.EmailNotFoundException;
+import health.care.booking.exceptions.UserNotFoundException;
 import health.care.booking.models.Role;
 import health.care.booking.models.User;
 import health.care.booking.respository.UserRepository;
@@ -31,6 +33,25 @@ public class UserService {
         }
 
         return userRepository.save(user);
+    }
+
+    // update user
+    public User updateUser(String userId, UpdateUserDTO updateUserDTO) {
+
+        if (userRepository.existsById(userId)) {
+        User updatedUser = userRepository.findUserById(userId);
+
+        updatedUser.setFirstName(updateUserDTO.getFirstName());
+        updatedUser.setLastName(updateUserDTO.getLastName());
+        updatedUser.setEmail(updateUserDTO.getEmail());
+        updatedUser.setCity(updateUserDTO.getCity());
+        updatedUser.setStreet(updateUserDTO.getStreet());
+        updatedUser.setPhoneNumber(updateUserDTO.getPhoneNumber());
+
+        return userRepository.save(updatedUser);
+        } else {
+            throw new UserNotFoundException("User with id " + userId + " was not found.");
+        }
     }
 
     public User findByUsername(String username) {
