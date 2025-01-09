@@ -5,7 +5,6 @@ import jakarta.validation.constraints.NotBlank;
 import org.springframework.data.mongodb.core.index.Indexed;
 
 public class UpdateUserDTO {
-
     @NotBlank
     private String firstName;
     @NotBlank

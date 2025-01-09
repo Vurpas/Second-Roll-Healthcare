@@ -35,10 +35,12 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    // update user
     public User updateUser(String userId, UpdateUserDTO updateUserDTO) {
 
         if (userRepository.existsById(userId)) {
         User updatedUser = userRepository.findUserById(userId);
+
         updatedUser.setFirstName(updateUserDTO.getFirstName());
         updatedUser.setLastName(updateUserDTO.getLastName());
         updatedUser.setEmail(updateUserDTO.getEmail());
