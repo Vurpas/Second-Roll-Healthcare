@@ -48,6 +48,7 @@ public class SecurityConfig {
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/appointment/**").hasAnyRole( "ADMIN") // the appointment-endpoint only has ADMIN access for now
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
