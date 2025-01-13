@@ -16,8 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -86,6 +85,36 @@ public class AvailabilityServiceTests {
         verify(availabilityRepository, times(1)).save(any(Availability.class));
     }
 
+    @Test
+    public void testCreateAvailability_CaregiverNotFound() {
+        // arrange
+        // setting up test data
+
+        //non-existing caregiverId
+        String caregiverId = "nonexistent";
+        List<LocalDateTime> availableSlots = Arrays.asList(
+                LocalDateTime.of(2025,1,13,10,0),
+                LocalDateTime.of(2025,1,13,13,0)
+        );
+        // mock the behavior of userRepository.findById to return an empty Optional
+        when(userRepository.findById(caregiverId)).thenReturn(Optional.empty());
+
+        // act & assert
+        // verify that an exception is thrown
+        Exception exception = assertThrows(IllegalArgumentException.class, () ->
+                // calls the method
+                availabilityService.createAvailability(caregiverId, availableSlots)
+        );
+
+        // check exception message
+        assertEquals("Caregiver with ID nonexistent not found", exception.getMessage());
+
+        // verify that the findById method only gets called one time
+        verify(userRepository, times(1)).findById(caregiverId);
+
+        // verify that the save method in availability repository never gets called
+        verifyNoInteractions(availabilityRepository);
+    }
 
 
 
