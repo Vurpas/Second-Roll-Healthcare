@@ -1,5 +1,7 @@
 package health.care.booking;
 
+import health.care.booking.dto.UpdateUserDTO;
+import health.care.booking.exceptions.UserNotFoundException;
 import health.care.booking.models.User;
 import health.care.booking.respository.UserRepository;
 import health.care.booking.services.UserService;
@@ -10,8 +12,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -90,5 +91,93 @@ public class UserServiceTests {
 
         // verify that userRepository.save() only gets called once with a User object
         verify(userRepository, times(1)).save(any(User.class));
+    }
+
+    /**
+     * test updateUser to ensure that a user is registered correctly.
+     * */
+    @Test
+    public void TestUpdateUser_Success() {
+        // Arrange
+        // create a sample User (before update)
+        User existingUser = new User();
+        existingUser.setId("1");
+        existingUser.setFirstName("OldFirstName");
+        existingUser.setLastName("OldLastName");
+        existingUser.setEmail("oldEmail@hotmail.com");
+        existingUser.setCity("OldCity");
+        existingUser.setStreet("OldStreet");
+        existingUser.setPhoneNumber("123456789");
+
+        // create an UpdateUserDTO with the updated information
+        UpdateUserDTO updateUserDTO = new UpdateUserDTO();
+        updateUserDTO.setFirstName("NewFirstName");
+        updateUserDTO.setLastName("NewLastName");
+        updateUserDTO.setEmail("newEmail@hotmail.com");
+        updateUserDTO.setCity("NewCity");
+        updateUserDTO.setStreet("NewStreet");
+        updateUserDTO.setPhoneNumber("987654321");
+
+        // mock the behavior of userRepository.existsById() and userRepository.findUserById()
+        when(userRepository.existsById("1")).thenReturn(true);
+        when(userRepository.findUserById("1")).thenReturn(existingUser);
+
+        // mock the behavior of userRepository.save() to return the updated user
+        when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // Act
+        // call the update user method in UserService
+        User result = userService.updateUser("1", updateUserDTO);
+
+        // Assert
+        // verify that the updated user has the correct information
+        assertNotNull(result.getId(), "Updated user should have an ID.");
+        assertEquals("NewFirstName", result.getFirstName(), "first name should be updated.");
+        assertEquals("NewLastName", result.getLastName(), "last name should be updated.");
+        assertEquals("newEmail@hotmail.com", result.getEmail(), "email should be updated.");
+        assertEquals("NewCity", result.getCity(), "city should be updated.");
+        assertEquals("NewStreet", result.getStreet(), "street should be updated.");
+        assertEquals("987654321", result.getPhoneNumber(), "phone number should be updated.");
+
+        // verify that userRepository.save() was called exactly once with the updated user
+        verify(userRepository, times(1)).save(any(User.class));
+
+        // verify that the userRepository.existsById() method was called once
+        verify(userRepository, times(1)).existsById("1");
+
+        // verify that the userRepository.findUserById() method was called once
+        verify(userRepository, times(1)).findUserById("1");
+    }
+
+    /**
+     * negative test: updateUser with a non-existent ID, should throw UserNotFoundException
+     * */
+    @Test
+    public void TestUpdateUser_UserNotFound() {
+        // Arrange
+        // create an UpdateUserDTO with the updated information
+        UpdateUserDTO updateUserDTO = new UpdateUserDTO();
+        updateUserDTO.setFirstName("NewFirstName");
+        updateUserDTO.setLastName("NewLastName");
+        updateUserDTO.setEmail("newEmail@hotmail.com");
+        updateUserDTO.setCity("NewCity");
+        updateUserDTO.setStreet("NewStreet");
+        updateUserDTO.setPhoneNumber("987654321");
+
+        // mock the behavior of userRepository.existsById() to return false (user not found)
+        when(userRepository.existsById("nonExistentId")).thenReturn(false);
+
+        // Act
+        // try to update a non-existing user and verify that the exception is thrown
+        assertThrows(UserNotFoundException.class, () -> {
+            userService.updateUser("nonExistentId", updateUserDTO);
+        });
+
+        // Assert
+        // verify that userRepository.existsById() was called once
+        verify(userRepository, times(1)).existsById("nonExistentId");
+
+        // ensure that userRepository.save() was not called
+        verify(userRepository, times(0)).save(any(User.class));
     }
 }
