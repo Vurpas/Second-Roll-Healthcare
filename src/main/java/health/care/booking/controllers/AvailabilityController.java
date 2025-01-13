@@ -38,6 +38,10 @@ public class AvailabilityController {
     //preAuthorized? för att se om user är ADMIN?
 
     //GET hämta alla availabilities
+    @GetMapping()
+    public ResponseEntity<List<Availability>> getAllAvailabilities(){
+        return ResponseEntity.ok(availabilityService.getAllAvailabilities());
+    }
 
 
     //PUT uppdatera availability

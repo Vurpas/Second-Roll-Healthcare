@@ -40,8 +40,11 @@ public class AvailabilityService {
 
     }
 
-    //GET
-    //hämta alla availabilities
+
+    // get all availabilities
+    public List<Availability> getAllAvailabilities(){
+        return availabilityRepository.findAll();
+    }
 
     //UPDATE
     //uppdatera availabilities baserat på id
