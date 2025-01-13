@@ -31,8 +31,8 @@ public class AvailabilityController {
 
     // OBS create error handling for unorthorized attempts to create availability
     // and check that entered availability is not already excisting! OBS
-    public ResponseEntity<Availability> createAvailability(@RequestParam String caregiverId, @RequestBody List<LocalDateTime> availabilitySlots){
-        Availability availability = availabilityService.createAvailability(caregiverId, availabilitySlots);
+    public ResponseEntity<Availability> createAvailability(@RequestParam String caregiverId, @RequestBody List<LocalDateTime> availableSlots){
+        Availability availability = availabilityService.createAvailability(caregiverId, availableSlots);
         return ResponseEntity.ok(availability);
     }
     //preAuthorized? för att se om user är ADMIN?

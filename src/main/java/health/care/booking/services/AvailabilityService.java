@@ -27,14 +27,14 @@ public class AvailabilityService {
 
     // OBS create error handling for unorthorized attempts to create availability
     // and check that entered availability is not already excisting! OBS
-    public Availability createAvailability (String caregiverId, List<LocalDateTime> availabilitySlots) {
+    public Availability createAvailability (String caregiverId, List<LocalDateTime> availableSlots) {
 
         User caregiver = userRepository.findById(caregiverId)
                 .orElseThrow(() -> new IllegalArgumentException("Caregiver with ID " + caregiverId + " not found"));
 
         Availability availability = new Availability();
         availability.setCaregiverId(caregiver);
-        availability.setAvailableSlots(availabilitySlots);
+        availability.setAvailableSlots(availableSlots);
 
         return availabilityRepository.save(availability);
 
