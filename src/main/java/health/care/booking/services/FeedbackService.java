@@ -2,7 +2,6 @@ package health.care.booking.services;
 
 import health.care.booking.dto.CreateFeedbackDTO;
 import health.care.booking.exceptions.ServiceException;
-import health.care.booking.models.Appointment;
 import health.care.booking.models.Feedback;
 import health.care.booking.models.User;
 import health.care.booking.respository.FeedbackRepository;
@@ -27,7 +26,6 @@ public class FeedbackService {
 
         // här ska appointmentRepository in
 
-        Appointment appointment = new Appointment();
         Feedback feedback = new Feedback();
 
         feedback.setPatientId(user);
@@ -44,5 +42,17 @@ public class FeedbackService {
 public List<Feedback> getAllFeedbacks() {
     return feedbackRepository.findAll();
 }
+
+// Delete Feedback
+    public String deleteFeedback(String id) {
+       /*  Optional<User> user = Optional.ofNullable(userRepository.findByRoles(ADMIN));
+        if (!user.isPresent() ) {
+            throw new ServiceException("Action not allowed.");
+        }
+        
+        */
+        feedbackRepository.deleteById(id);
+        return "Feedback deleted";
+    }
 }
 
