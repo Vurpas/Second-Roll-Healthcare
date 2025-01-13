@@ -1,5 +1,7 @@
 package health.care.booking.dto;
 
+import health.care.booking.models.Appointment;
+
 import java.time.LocalDateTime;
 
 public class AppointmentResponse {
@@ -9,11 +11,12 @@ public class AppointmentResponse {
     private String caregiverId;
     private LocalDateTime dateTime;
 
-
-    // Empty constructor
-    public AppointmentResponse() {
+    public AppointmentResponse(Appointment appointment) {
+        this.appointmentId = appointment.getId();
+        this.patientId = appointment.getPatientId().getId();
+        this.caregiverId = appointment.getCaregiverId().getId();
+        this.dateTime = appointment.getDateTime();
     }
-
 
     // Getters and setters
     public String getAppointmentId() {

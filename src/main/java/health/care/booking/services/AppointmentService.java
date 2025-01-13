@@ -19,17 +19,11 @@ import java.util.Optional;
 public class AppointmentService {
     @Autowired
     private UserRepository userRepository;
-
     @Autowired
     private AppointmentRepository appointmentRepository;
     @Autowired
     private AvailabilityRepository availabilityRepository;
-
-
-    public List<LocalDateTime> showAvailableSlots(Availability availability) {
-        List<LocalDateTime> availableSlots = availability.getAvailableSlots();
-        return availability.getAvailableSlots();
-    }
+    private AvailabilityService availabilityService;
 
     // POST: create appointment
     public Appointment createAppointment(AppointmentRequest appointmentRequest) {
@@ -41,10 +35,10 @@ public class AppointmentService {
             appointment.setDateTime(appointmentRequest.getAppointmentDate());
             appointment.setStatus(Status.SCHEDULED);
             Optional<User> patientId = userRepository.findById(appointmentRequest.getPatientId());
-            appointment.setPatientId(patientId.get()); // error handling is needed here
-            // need to update availability array
-            // loop through array in availability and remove matching date
+            appointment.setPatientId(patientId.get());  // error handling is needed here
 
+            // loops through the available slots and filter out the slots *not* chosen and saves them in a List
+            // the chosen slot is then removed from the List
             List<LocalDateTime> availableSlots = currentAvailability.getAvailableSlots();
             System.out.println(availableSlots);
             System.out.println(appointmentRequest.getAppointmentDate());
@@ -52,6 +46,7 @@ public class AppointmentService {
             currentAvailability.setAvailableSlots(dates);
             availabilityRepository.save(currentAvailability);
             System.out.println(dates);
+            System.out.println(appointmentRequest.getAppointmentDate());
 
 
             // Save to database with repository for appointment
@@ -61,11 +56,11 @@ public class AppointmentService {
         }
     }
 
+
     // EDIT: update appointment
 
     // DELETE: delete an appointment
 
     // GET: get all appointments for a given id (caregiver and patient)
-
 
 }

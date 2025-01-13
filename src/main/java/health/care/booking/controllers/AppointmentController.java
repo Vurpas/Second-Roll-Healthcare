@@ -2,6 +2,7 @@ package health.care.booking.controllers;
 
 
 import health.care.booking.dto.AppointmentRequest;
+import health.care.booking.dto.AppointmentResponse;
 import health.care.booking.models.Appointment;
 import health.care.booking.services.AppointmentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,12 +20,11 @@ public class AppointmentController {
     @Autowired
     AppointmentService appointmentService;
 
-    // POST: create appointment
     @PostMapping()
     @PreAuthorize("hasRole('USER', 'ADMIN')")
-    public ResponseEntity<Appointment> createAppointment(@RequestBody AppointmentRequest appointmentRequest) {
-    Appointment appointment = appointmentService.createAppointment(appointmentRequest);
-    return ResponseEntity.ok(appointment);
+    public ResponseEntity<AppointmentResponse> createAppointment(@RequestBody AppointmentRequest appointmentRequest) {
+        Appointment appointment = appointmentService.createAppointment(appointmentRequest);
+        return ResponseEntity.ok(new AppointmentResponse(appointment));
     }
 
     // UPDATE: update appointment
