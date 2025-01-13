@@ -41,7 +41,13 @@ public class AvailabilityController {
     //GET hämta alla availabilities
 
 
-    //PUT uppdatera availability
+    // PUT - Update availability
+    // A caregiver can change the time or date on the availability.
+    //
+    // TODO: Discuss the future of the availability setup. Maybe one caregiver should have only ONE availability
+    //  where the list of availableSlots is being filled/updated by the caretaker, instead of creating a new
+    //  availability and a new list for every time the caretaker adds more availableSlots.
+
     @PutMapping("/update")
     public ResponseEntity<?> updateAvailability
     (@RequestParam String availabilityId, @RequestParam LocalDateTime oldDate, @RequestParam LocalDateTime newDate) {

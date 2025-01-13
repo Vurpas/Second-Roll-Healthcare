@@ -48,6 +48,7 @@ public class AvailabilityService {
 
     //UPDATE
     //uppdatera availabilities baserat på id
+    // TODO: Create error handling for if oldDate does not exist
     public Availability updateAvailability(String availabilityId, LocalDateTime oldDate, LocalDateTime newDate) {
 
         if (availabilityRepository.existsById(availabilityId)) {
