@@ -1,5 +1,6 @@
 package health.care.booking.controllers;
 
+import health.care.booking.exceptions.ObjectNotFoundException;
 import health.care.booking.models.Availability;
 import health.care.booking.respository.AvailabilityRepository;
 import health.care.booking.respository.UserRepository;
@@ -41,7 +42,16 @@ public class AvailabilityController {
 
 
     //PUT uppdatera availability
-
+    @PutMapping("/update")
+    public ResponseEntity<?> updateAvailability
+    (@RequestParam String availabilityId, @RequestParam LocalDateTime oldDate, @RequestParam LocalDateTime newDate) {
+        try {
+            Availability updatedAvailability = availabilityService.updateAvailability(availabilityId, oldDate, newDate);
+            return ResponseEntity.ok(updatedAvailability);
+        } catch (ObjectNotFoundException e) {
+                return ResponseEntity.badRequest().body("Availability with ID " + availabilityId + " was not found");
+            }
+    }
     //GET hämta availability baserat på id
     //behövs det och isåfall när?
 

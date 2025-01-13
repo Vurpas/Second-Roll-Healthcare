@@ -1,6 +1,7 @@
 package health.care.booking.services;
 
 
+import health.care.booking.exceptions.ObjectNotFoundException;
 import health.care.booking.models.Availability;
 import health.care.booking.models.User;
 import health.care.booking.respository.AvailabilityRepository;
@@ -40,12 +41,25 @@ public class AvailabilityService {
 
     }
 
+
+
     //GET
     //hämta alla availabilities
 
     //UPDATE
     //uppdatera availabilities baserat på id
+    public Availability updateAvailability(String availabilityId, LocalDateTime oldDate, LocalDateTime newDate) {
 
+        if (availabilityRepository.existsById(availabilityId)) {
+            Availability updatedAvailability = availabilityRepository.findAvailabilityById(availabilityId);
+            List<LocalDateTime> availableSlots = updatedAvailability.getAvailableSlots();
+            availableSlots.set(availableSlots.indexOf(oldDate) + 1, newDate);
+
+            return availabilityRepository.save(updatedAvailability);
+        } else {
+            throw new ObjectNotFoundException("Availability with id " + availabilityId + " was not found.");
+        }
+    }
     //GET
     //hämta availabilities baserat på caregiverId(userId)
 
