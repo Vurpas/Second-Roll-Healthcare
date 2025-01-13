@@ -8,7 +8,7 @@ import java.time.LocalDate;
 
 public class CreateFeedbackDTO {
     @NotBlank
-    private String userId;
+    private String patientId;
     @NotBlank
     private String appointmentId;
 
@@ -38,12 +38,12 @@ public class CreateFeedbackDTO {
 
 
 
-    public String getUserId() {
-        return userId;
+    public String getPatientId() {
+        return patientId;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setPatientId(String userId) {
+        this.patientId = userId;
     }
 
     public String getAppointmentId() {

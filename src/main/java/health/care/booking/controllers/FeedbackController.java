@@ -23,8 +23,8 @@ public class FeedbackController {
     @PreAuthorize("hasRole ('USER')")
     public ResponseEntity<CreateFeedbackResponse> createFeedback(@RequestBody CreateFeedbackDTO createFeedbackDTO) {
         Feedback feedback = feedbackService.createFeedback(createFeedbackDTO);
-        User user = feedback.getPatientId();
-        return ResponseEntity.ok().body(new CreateFeedbackResponse(feedback.getId(),user.getId(),
+        User patient = feedback.getPatientId();
+        return ResponseEntity.ok().body(new CreateFeedbackResponse(feedback.getId(),patient.getId(),
                 feedback.getAppointmentId(),feedback.getComment(),feedback.getRating(),feedback.getCreated_at()));
     }
 

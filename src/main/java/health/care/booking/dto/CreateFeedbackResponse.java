@@ -7,7 +7,7 @@ import java.time.LocalDate;
 
 public class CreateFeedbackResponse {
     private String id;
-    private String userId;
+    private String patientId;
     private Appointment appointmentId;
     private String comment;
     private int rating;
@@ -16,9 +16,9 @@ public class CreateFeedbackResponse {
 
 
 
-    public CreateFeedbackResponse(String id, String userId, Appointment appointmentId, String comment, int rating, LocalDate created_at) {
+    public CreateFeedbackResponse(String id, String patientId, Appointment appointmentId, String comment, int rating, LocalDate created_at) {
         this.id = id;
-        this.userId = userId;
+        this.patientId = patientId;
         this.appointmentId = appointmentId;
         this.comment = comment;
         this.rating= rating;
@@ -33,12 +33,12 @@ public class CreateFeedbackResponse {
         this.id = id;
     }
 
-    public String getUserId() {
-        return userId;
+    public String getPatientId() {
+        return patientId;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setPatientId(String patientId) {
+        this.patientId = patientId;
     }
 
     public Appointment getAppointmentId() {

@@ -25,7 +25,7 @@ public class FeedbackService {
 
     // Create feedback
     public Feedback createFeedback(CreateFeedbackDTO createFeedbackDTO) {
-        User user = userRepository.findById(createFeedbackDTO.getUserId())
+        User patient = userRepository.findById(createFeedbackDTO.getPatientId())
                 .orElseThrow(() -> new ServiceException("User not found"));
 
         Appointment appointment = appointmentRepository.findAppointmentById(createFeedbackDTO.getAppointmentId())
@@ -34,7 +34,7 @@ public class FeedbackService {
 
         Feedback feedback = new Feedback();
 
-        feedback.setPatientId(user);
+        feedback.setPatientId(patient);
         feedback.setAppointmentId(appointment);
         feedback.setComment(createFeedbackDTO.getComment());
         feedback.setRating(createFeedbackDTO.getRating());
@@ -51,12 +51,6 @@ public List<Feedback> getAllFeedbacks() {
 
 // Delete Feedback
     public String deleteFeedback(String id) {
-       /*  Optional<User> user = Optional.ofNullable(userRepository.findByRoles(ADMIN));
-        if (!user.isPresent() ) {
-            throw new ServiceException("Action not allowed.");
-        }
-        
-        */
         feedbackRepository.deleteById(id);
         return "Feedback deleted";
     }
