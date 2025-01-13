@@ -54,6 +54,15 @@ public class UserService {
         }
     }
 
+    // delete user
+    public String deleteUser(String id) {
+        if(!userRepository.existsById(id)) {
+            throw new UserNotFoundException("User with id: " + id + " was not found.");
+        }
+        userRepository.deleteById(id);
+        return "Game Ad deleted";
+    }
+
     public User findByUsername(String username) {
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
