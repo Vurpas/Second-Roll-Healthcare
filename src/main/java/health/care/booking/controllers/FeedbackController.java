@@ -25,7 +25,7 @@ public class FeedbackController {
         Feedback feedback = feedbackService.createFeedback(createFeedbackDTO);
         User user = feedback.getPatientId();
         return ResponseEntity.ok().body(new CreateFeedbackResponse(feedback.getId(),user.getId(),
-               /* feedback.getAppointmentId(),*/feedback.getComment(),feedback.getRating(),feedback.getCreated_at()));
+                feedback.getAppointmentId(),feedback.getComment(),feedback.getRating(),feedback.getCreated_at()));
     }
 
 

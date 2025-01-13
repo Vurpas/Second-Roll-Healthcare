@@ -14,10 +14,10 @@ public class Feedback {
     private String id;
 
     // Feedback kan man endast göra på ett specifikt Appointment
-  /*  @DBRef
+    @DBRef
     private Appointment appointmentId;
 
-   */
+
 
     // ev ta bort patient finns i appointment men kanske att det påverkar performance..
     @DBRef
@@ -52,13 +52,13 @@ public class Feedback {
         this.id = id;
     }
 
- /*   public Appointment getAppointmentId() {
+    public Appointment getAppointmentId() {
         return appointmentId;
     }
 
     public void setAppointmentId(Appointment appointmentId) {
         this.appointmentId = appointmentId;
-    }*/
+    }
 
     public User getPatientId() {
         return patientId;

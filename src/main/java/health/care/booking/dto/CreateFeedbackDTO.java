@@ -9,10 +9,10 @@ import java.time.LocalDate;
 public class CreateFeedbackDTO {
     @NotBlank
     private String userId;
-   /* @NotBlank
+    @NotBlank
     private String appointmentId;
 
-    */
+
     @NotBlank
     @Size(min = 1, max = 1000)
     private String comment;
@@ -46,7 +46,7 @@ public class CreateFeedbackDTO {
         this.userId = userId;
     }
 
- /*   public String getAppointmentId() {
+    public String getAppointmentId() {
         return appointmentId;
     }
 
@@ -54,7 +54,7 @@ public class CreateFeedbackDTO {
         this.appointmentId = appointmentId;
     }
 
-  */
+
 
     public String getComment() {
         return comment;

@@ -1,5 +1,6 @@
 package health.care.booking.dto;
 
+import health.care.booking.models.Appointment;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDate;
@@ -7,7 +8,7 @@ import java.time.LocalDate;
 public class CreateFeedbackResponse {
     private String id;
     private String userId;
-    //private Appointment appointmentId;
+    private Appointment appointmentId;
     private String comment;
     private int rating;
     @CreatedDate
@@ -15,10 +16,10 @@ public class CreateFeedbackResponse {
 
 
 
-    public CreateFeedbackResponse(String id, String userId, /*Appointment appointmentId,*/ String comment, int rating, LocalDate created_at) {
+    public CreateFeedbackResponse(String id, String userId, Appointment appointmentId, String comment, int rating, LocalDate created_at) {
         this.id = id;
         this.userId = userId;
-       // this.appointmentId = appointmentId;
+        this.appointmentId = appointmentId;
         this.comment = comment;
         this.rating= rating;
         this.created_at = created_at;
@@ -40,7 +41,7 @@ public class CreateFeedbackResponse {
         this.userId = userId;
     }
 
-  /*  public Appointment getAppointmentId() {
+    public Appointment getAppointmentId() {
         return appointmentId;
     }
 
@@ -48,7 +49,6 @@ public class CreateFeedbackResponse {
         this.appointmentId = appointmentId;
     }
 
-   */
 
     public String getComment() {
         return comment;
