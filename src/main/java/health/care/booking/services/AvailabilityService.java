@@ -46,6 +46,8 @@ public class AvailabilityService {
         return availabilityRepository.findAll();
     }
 
+
+
     //UPDATE
     //uppdatera availabilities baserat på id
 
@@ -53,6 +55,8 @@ public class AvailabilityService {
     //hämta availabilities baserat på caregiverId(userId)
 
     //DELETE
-    //ta bort availability baserat på id
+    // Delete availability based on ID
+    public Availability deleteAvailability(String availabilityId) {
 
+    }
 }

@@ -1,5 +1,6 @@
 package health.care.booking.controllers;
 
+import health.care.booking.exceptions.UserNotFoundException;
 import health.care.booking.models.Availability;
 import health.care.booking.respository.AvailabilityRepository;
 import health.care.booking.respository.UserRepository;
@@ -49,7 +50,16 @@ public class AvailabilityController {
     //GET hämta availability baserat på id
     //behövs det och isåfall när?
 
-    //DELETE ta bort availability baserat på id
+    //DELETE - Two Delete availability methods, one based on Id and one based on Date
+    @DeleteMapping()
+    public ResponseEntity<?> deleteAvailability(@RequestParam String availabilityId) {
+        try {
+            Availability deleteAvailability = availabilityService.deleteAvailability(availabilityId);
+            return ResponseEntity.ok("Availability deleted");
+        } catch (ObjectNotFoundException e) {
+            return ResponseEntity.badRequest().body("Availability with ID " + availabilityId + " was not found");
+        }
+    }
 
     //GET hämta alla availabilities för specifik vårdgivare baserat på userId
 }
