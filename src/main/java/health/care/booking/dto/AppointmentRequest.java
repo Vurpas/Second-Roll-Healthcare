@@ -9,9 +9,10 @@ public class AppointmentRequest {
     private final String availabilityId;
 
     public AppointmentRequest(LocalDateTime appointmentDate, String patientId, String availabilityId) {
+        this.availabilityId = availabilityId;
         this.appointmentDate = appointmentDate;
         this.patientId = patientId;
-        this.availabilityId = availabilityId;
+
     }
 
     public LocalDateTime getAppointmentDate() {

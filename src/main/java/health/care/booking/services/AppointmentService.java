@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class AppointmentService {
@@ -23,37 +22,31 @@ public class AppointmentService {
     private AppointmentRepository appointmentRepository;
     @Autowired
     private AvailabilityRepository availabilityRepository;
-    private AvailabilityService availabilityService;
 
     // POST: create appointment
     public Appointment createAppointment(AppointmentRequest appointmentRequest) {
-        Optional<Availability> availability = availabilityRepository.findById(appointmentRequest.getAvailabilityId());
-        if (availability.isPresent()) {
-            Availability currentAvailability = availability.get();
+        Availability availability = availabilityRepository.findById(appointmentRequest.getAvailabilityId())
+                .orElseThrow(() -> new IllegalArgumentException("Availability with ID " + appointmentRequest.getAvailabilityId() + " not found."));
             Appointment appointment = new Appointment();
-            appointment.setCaregiverId(currentAvailability.getCaregiverId());
+            appointment.setCaregiverId(availability.getCaregiverId());
             appointment.setDateTime(appointmentRequest.getAppointmentDate());
             appointment.setStatus(Status.SCHEDULED);
-            Optional<User> patientId = userRepository.findById(appointmentRequest.getPatientId());
-            appointment.setPatientId(patientId.get());  // error handling is needed here
+            User patientId = userRepository.findById(appointmentRequest.getPatientId())
+                    .orElseThrow(() -> new IllegalArgumentException("Patient with ID " + appointmentRequest.getPatientId() + " not found."));
+            appointment.setPatientId(patientId);
 
             // loops through the available slots and filter out the slots *not* chosen and saves them in a List
             // the chosen slot is then removed from the List
-            List<LocalDateTime> availableSlots = currentAvailability.getAvailableSlots();
-            System.out.println(availableSlots);
-            System.out.println(appointmentRequest.getAppointmentDate());
+            List<LocalDateTime> availableSlots = availability.getAvailableSlots();
             List<LocalDateTime> dates = availableSlots.stream().filter(element -> !element.isEqual(appointmentRequest.getAppointmentDate())).toList();
-            currentAvailability.setAvailableSlots(dates);
-            availabilityRepository.save(currentAvailability);
-            System.out.println(dates);
-            System.out.println(appointmentRequest.getAppointmentDate());
-
-
+            if (dates.size()<availableSlots.size()) {
+                availability.setAvailableSlots(dates);
+                availabilityRepository.save(availability);
+        } else {
+                throw new IllegalArgumentException("The specified date does not exist");
+            }
             // Save to database with repository for appointment
             return appointmentRepository.save(appointment);
-        } else {
-            throw new RuntimeException("Availability for given ID not found");
-        }
     }
 
 
