@@ -1,10 +1,12 @@
 package health.care.booking.models;
 
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
+import org.hibernate.validator.constraints.Range;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.time.LocalDate;
 
 @Document(collection = "feedback")
 public class Feedback {
@@ -15,6 +17,8 @@ public class Feedback {
     @DBRef
     private Appointment appointmentId;
 
+
+
     // ev ta bort patient finns i appointment men kanske att det påverkar performance..
     @DBRef
     private User patientId;
@@ -23,9 +27,19 @@ public class Feedback {
 
     // väldigt osäker på om det här fungerar..
     // men har lovat att hjälpa er om det inte gör det
-    @Min(1)
-    @Max(5)
+    @Range(min = 1, max = 5)
     private int rating;
+    @CreatedDate
+    private LocalDate created_at;
+    public LocalDate getCreated_at() {
+        return created_at;
+    }
+
+    public void setCreated_at(LocalDate created_at) {
+        this.created_at = created_at;
+    }
+
+
 
     public Feedback() {
     }
@@ -62,13 +76,12 @@ public class Feedback {
         this.comment = comment;
     }
 
-    @Min(1)
-    @Max(5)
+
     public int getRating() {
         return rating;
     }
 
-    public void setRating(@Min(1) @Max(5) int rating) {
+    public void setRating(int rating) {
         this.rating = rating;
     }
 }
