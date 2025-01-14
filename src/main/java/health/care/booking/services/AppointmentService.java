@@ -10,7 +10,6 @@ import health.care.booking.respository.AvailabilityRepository;
 import health.care.booking.respository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -50,9 +49,15 @@ public class AppointmentService {
     }
 
 
-    // EDIT: update appointment
+    // PUT: Cancel appointment and set appointment status to CANCELLED
+    public Appointment cancelAppointment(String appointmentId) {
+        Appointment appointment = appointmentRepository.findById(appointmentId)
+                .orElseThrow(() -> new IllegalArgumentException("Appointment with ID " + appointmentId + " not found."));
+        appointment.setStatus(Status.CANCELLED);
+        return appointmentRepository.save(appointment);
+    }
 
-    // DELETE: delete an appointment
+
 
     // GET: get all appointments for a given id (caregiver and patient)
 

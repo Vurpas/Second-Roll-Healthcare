@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Document(collection = "appointment")
 public class Appointment {
     @Id
-    private String id;
+    private String appointmentId;
 
     @DBRef
     private User patientId;
@@ -25,14 +25,15 @@ public class Appointment {
     private Status status;
 
     public Appointment() {
+
     }
 
-    public String getId() {
-        return id;
+    public String getAppointmentId() {
+        return appointmentId;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setAppointmentId(String appointmentId) {
+        this.appointmentId = appointmentId;
     }
 
     public User getPatientId() {
