@@ -29,7 +29,7 @@ public class FeedbackController {
             return ResponseEntity.ok().body(new CreateFeedbackResponse(feedback.getId(), patient.getId(),
                     feedback.getAppointmentId(), feedback.getComment(), feedback.getRating(), feedback.getCreated_at()));
         } catch (ServiceException e) {
-            return ResponseEntity.badRequest().body("Invalid rating");
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
