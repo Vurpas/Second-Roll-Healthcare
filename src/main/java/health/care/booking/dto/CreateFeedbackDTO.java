@@ -2,6 +2,7 @@ package health.care.booking.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import org.hibernate.validator.constraints.Range;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDate;
@@ -17,7 +18,7 @@ public class CreateFeedbackDTO {
     @Size(min = 1, max = 1000)
     private String comment;
 
-    @Size(min = 1, max = 5)
+    @Range(min = 1, max = 5)
     private int rating;
     @CreatedDate
     private LocalDate created_at;

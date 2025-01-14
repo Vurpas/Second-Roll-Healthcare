@@ -1,6 +1,6 @@
 package health.care.booking.models;
 
-import jakarta.validation.constraints.Size;
+import org.hibernate.validator.constraints.Range;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
@@ -27,7 +27,7 @@ public class Feedback {
 
     // väldigt osäker på om det här fungerar..
     // men har lovat att hjälpa er om det inte gör det
-    @Size(min = 1, max = 5)
+    @Range(min = 1, max = 5)
     private int rating;
     @CreatedDate
     private LocalDate created_at;

@@ -2,6 +2,7 @@ package health.care.booking.controllers;
 
 import health.care.booking.dto.CreateFeedbackDTO;
 import health.care.booking.dto.CreateFeedbackResponse;
+import health.care.booking.exceptions.ServiceException;
 import health.care.booking.models.Feedback;
 import health.care.booking.models.User;
 import health.care.booking.services.FeedbackService;
@@ -21,11 +22,15 @@ public class FeedbackController {
     // Post
     @PostMapping()
     @PreAuthorize("hasRole ('USER')")
-    public ResponseEntity<CreateFeedbackResponse> createFeedback(@RequestBody CreateFeedbackDTO createFeedbackDTO) {
-        Feedback feedback = feedbackService.createFeedback(createFeedbackDTO);
-        User patient = feedback.getPatientId();
-        return ResponseEntity.ok().body(new CreateFeedbackResponse(feedback.getId(),patient.getId(),
-                feedback.getAppointmentId(),feedback.getComment(),feedback.getRating(),feedback.getCreated_at()));
+    public ResponseEntity<?> createFeedback(@RequestBody CreateFeedbackDTO createFeedbackDTO) {
+        try {
+            Feedback feedback = feedbackService.createFeedback(createFeedbackDTO);
+            User patient = feedback.getPatientId();
+            return ResponseEntity.ok().body(new CreateFeedbackResponse(feedback.getId(), patient.getId(),
+                    feedback.getAppointmentId(), feedback.getComment(), feedback.getRating(), feedback.getCreated_at()));
+        } catch (ServiceException e) {
+            return ResponseEntity.badRequest().body("Invalid rating");
+        }
     }
 
 

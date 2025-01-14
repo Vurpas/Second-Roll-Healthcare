@@ -31,6 +31,14 @@ public class FeedbackService {
         Appointment appointment = appointmentRepository.findAppointmentById(createFeedbackDTO.getAppointmentId())
                 .orElseThrow(() -> new ServiceException("Appointment not found"));
 
+        int number = createFeedbackDTO.getRating();
+
+        if (number <= 0 || number > 6) {
+            throw new ServiceException("Please select a rating between 1 - 6!");
+        } else {
+            createFeedbackDTO.setRating(number);
+        }
+
 
         Feedback feedback = new Feedback();
 
@@ -54,5 +62,6 @@ public List<Feedback> getAllFeedbacks() {
         feedbackRepository.deleteById(id);
         return "Feedback deleted";
     }
+
 }
 
