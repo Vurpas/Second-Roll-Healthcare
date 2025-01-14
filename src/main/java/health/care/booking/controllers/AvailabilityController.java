@@ -39,7 +39,11 @@ public class AvailabilityController {
     //preAuthorized? för att se om user är ADMIN?
 
     //GET hämta alla availabilities
-
+    @GetMapping("/all")
+    public ResponseEntity<?> getAllAvailabilities() {
+        List<Availability> allAvailabilities = availabilityService.getAllAvailabilities();
+        return ResponseEntity.ok(allAvailabilities);
+    }
 
     // PUT - Update availability
     // A caregiver can change the time or date on the availability.
@@ -55,7 +59,7 @@ public class AvailabilityController {
             Availability updatedAvailability = availabilityService.updateAvailability(availabilityId, oldDate, newDate);
             return ResponseEntity.ok(updatedAvailability);
         } catch (ObjectNotFoundException e) {
-                return ResponseEntity.badRequest().body("Availability with ID " + availabilityId + " was not found");
+                return ResponseEntity.badRequest().body(e.getMessage());
             }
     }
     //GET hämta availability baserat på id

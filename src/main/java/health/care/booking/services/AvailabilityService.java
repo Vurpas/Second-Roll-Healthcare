@@ -50,21 +50,27 @@ public class AvailabilityService {
     //uppdatera availabilities baserat på id
     // TODO: Create error handling for if oldDate does not exist
     public Availability updateAvailability(String availabilityId, LocalDateTime oldDate, LocalDateTime newDate) {
-
+    Availability updatedAvailability = availabilityRepository.findAvailabilityById(availabilityId);
         if (availabilityRepository.existsById(availabilityId)) {
-            Availability updatedAvailability = availabilityRepository.findAvailabilityById(availabilityId);
-            List<LocalDateTime> availableSlots = updatedAvailability.getAvailableSlots();
-            int index = availableSlots.indexOf(oldDate);
-            availableSlots.set(index, newDate);
-
-            return availabilityRepository.save(updatedAvailability);
+            List<LocalDateTime> availableSlots = availabilityRepository.findAvailabilityById(availabilityId).getAvailableSlots();
+            for (LocalDateTime a : availableSlots) {
+                if (a.isEqual(oldDate)) {
+                    updatedAvailability.getAvailableSlots().set(availableSlots.indexOf(a), newDate);
+                    availabilityRepository.save(updatedAvailability);
+                }
+            }
+            return updatedAvailability;
         } else {
             throw new ObjectNotFoundException("Availability with id " + availabilityId + " was not found.");
         }
     }
+
+
     //GET
     //hämta availabilities baserat på caregiverId(userId)
-
+    public List<Availability> getAllAvailabilities() {
+        return availabilityRepository.findAll();
+    }
     //DELETE
     //ta bort availability baserat på id
 
