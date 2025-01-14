@@ -1,6 +1,7 @@
 package health.care.booking.services;
 
 import health.care.booking.dto.CreateFeedbackDTO;
+import health.care.booking.exceptions.ServiceException;
 import health.care.booking.models.Appointment;
 import health.care.booking.models.Feedback;
 import health.care.booking.models.User;
@@ -72,5 +73,42 @@ public class FeedbackServiceTests {
         assertEquals(mockAppointment, feedback.getAppointmentId());
         assertEquals(createFeedbackDTO.getComment(), feedback.getComment());
         assertEquals(createFeedbackDTO.getRating(), feedback.getRating());
+    }
+
+    @Test(expected = ServiceException.class)
+    public void testCreateFeedback_UserNotFound() {
+        // Arrange: Mock the reposiroty call for a user that doesn´t exist
+        when(userRepository.findById(createFeedbackDTO.getPatientId())).thenReturn(Optional.empty());
+
+        // Act: Call the method under test
+        feedbackService.createFeedback(createFeedbackDTO);
+    }
+
+    @Test(expected = ServiceException.class)
+    public void testCreateFeedback_AppointmentNotFound() {
+        // Arrange: Mock the repository call for an appointment that doesn´t exist
+        when(userRepository.findById(createFeedbackDTO.getPatientId())).thenReturn(Optional.of(new User()));
+        when(appointmentRepository.findAppointmentById(createFeedbackDTO.getAppointmentId())).thenReturn(Optional.empty());
+
+        // Act: Call the method under test
+        feedbackService.createFeedback(createFeedbackDTO);
+    }
+
+    @Test(expected = ServiceException.class)
+    public void testCreateFeedback_InvalidRating_LessThan1() {
+        // Arrange: Set invalid rating less than 1
+        createFeedbackDTO.setRating(0);
+
+        // Act: Call the method under test
+        feedbackService.createFeedback(createFeedbackDTO);
+    }
+
+    @Test(expected = ServiceException.class)
+    public void testCreateFeedback_InvalidRating_greaterThan6() {
+        // Arrange: Set invalid rating greater than 6
+        createFeedbackDTO.setRating(7);
+
+        // Act: Call the method under test
+        feedbackService.createFeedback(createFeedbackDTO);
     }
 }
