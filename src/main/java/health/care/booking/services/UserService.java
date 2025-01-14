@@ -55,12 +55,12 @@ public class UserService {
     }
 
     // delete user
-    public String deleteUser(String id) {
-        if(!userRepository.existsById(id)) {
-            throw new UserNotFoundException("User with id: " + id + " was not found.");
+    public String deleteUser(String userId) {
+        if(!userRepository.existsById(userId)) {
+            throw new UserNotFoundException("User with id: " + userId + " was not found.");
         }
-        userRepository.deleteById(id);
-        return "Game Ad deleted";
+        userRepository.deleteById(userId);
+        return "User deleted";
     }
 
     public User findByUsername(String username) {

@@ -6,7 +6,6 @@ import health.care.booking.models.User;
 import health.care.booking.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -32,9 +31,8 @@ public class UserController {
     }
 
     // delete user
-    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-    @PreAuthorize("hasAnyRole('USER','ADMIN')")
-    public String deleteUser(@PathVariable String id) {
-        return userService.deleteUser(id);
+    @RequestMapping(value = "/{userId}/delete", method = RequestMethod.DELETE)
+    public String deleteUser(@PathVariable String userId) {
+        return userService.deleteUser(userId);
     }
 }
