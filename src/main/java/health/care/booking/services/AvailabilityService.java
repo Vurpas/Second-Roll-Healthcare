@@ -54,7 +54,8 @@ public class AvailabilityService {
         if (availabilityRepository.existsById(availabilityId)) {
             Availability updatedAvailability = availabilityRepository.findAvailabilityById(availabilityId);
             List<LocalDateTime> availableSlots = updatedAvailability.getAvailableSlots();
-            availableSlots.set(availableSlots.indexOf(oldDate) + 1, newDate);
+            int index = availableSlots.indexOf(oldDate);
+            availableSlots.set(index, newDate);
 
             return availabilityRepository.save(updatedAvailability);
         } else {
