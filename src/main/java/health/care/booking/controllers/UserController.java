@@ -29,4 +29,10 @@ public class UserController {
             return ResponseEntity.badRequest().body("User with ID " + userId + " was not found");
         }
     }
+
+    // delete user
+    @RequestMapping(value = "/{userId}/delete", method = RequestMethod.DELETE)
+    public String deleteUser(@PathVariable String userId) {
+        return userService.deleteUser(userId);
+    }
 }

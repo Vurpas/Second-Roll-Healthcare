@@ -1,3 +1,4 @@
+
 package health.care.booking.services;
 
 import health.care.booking.dto.AppointmentRequest;
@@ -95,7 +96,7 @@ public class AppointmentServiceTest {
         assertEquals(Status.SCHEDULED, appointment.getStatus());
         assertEquals(patient, appointment.getPatientId());
         verify(appointmentRepository, times(1)).save(any(Appointment.class));
-        verify(availabilityRepository, times(1)).save(any(Availability.class)); // Verify availibility was updated
+        verify(availabilityRepository, times(1)).save(any(Availability.class)); // Verify availability was updated
     }
         @Test
         void testCreateAppointmentFailureWithNonExistentPatient() {
@@ -119,4 +120,6 @@ public class AppointmentServiceTest {
             assertEquals("The specified date does not exist", exception.getMessage());
         }
     }
+
+
 

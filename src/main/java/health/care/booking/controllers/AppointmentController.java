@@ -22,12 +22,9 @@ public class AppointmentController {
 
     @PostMapping()
     @PreAuthorize("hasRole('USER', 'ADMIN')")
-    public ResponseEntity<?> createAppointment(@RequestBody AppointmentRequest appointmentRequest) {
-        try {Appointment appointment = appointmentService.createAppointment(appointmentRequest);
-            return ResponseEntity.ok(new AppointmentResponse(appointment));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<AppointmentResponse> createAppointment(@RequestBody AppointmentRequest appointmentRequest) {
+        Appointment appointment = appointmentService.createAppointment(appointmentRequest);
+        return ResponseEntity.ok(new AppointmentResponse(appointment));
     }
 
     // UPDATE: update appointment

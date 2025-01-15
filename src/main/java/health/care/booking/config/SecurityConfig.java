@@ -47,12 +47,13 @@ public class SecurityConfig {
                         // chaina på hasRole eller hasAnyRole
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/user/**").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers("/user/{userId}/delete").hasRole("ADMIN")
                         .requestMatchers("/auth/**").permitAll()
                         //Makes sure only ADMINS can set and change availability
                         .requestMatchers("/availability/**").hasRole("ADMIN")
                         //temporary test requestmatcher
                         //.requestMatchers("/availability/**").permitAll()
-                        .requestMatchers("/appointment/**").hasAnyRole( "ADMIN") // the appointment-endpoint only has ADMIN access for now
+                        .requestMatchers("/appointment/**").permitAll() // the appointment-endpoint only has ADMIN access for now
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

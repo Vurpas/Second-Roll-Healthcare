@@ -12,7 +12,6 @@ public class AppointmentRequest {
         this.availabilityId = availabilityId;
         this.appointmentDate = appointmentDate;
         this.patientId = patientId;
-
     }
 
     public LocalDateTime getAppointmentDate() {
