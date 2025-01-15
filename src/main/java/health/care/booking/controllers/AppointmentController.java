@@ -1,6 +1,5 @@
 package health.care.booking.controllers;
 
-
 import health.care.booking.dto.AppointmentRequest;
 import health.care.booking.dto.AppointmentResponse;
 import health.care.booking.models.Appointment;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping(value="/appointment")
 public class AppointmentController {
-
     @Autowired
     AppointmentService appointmentService;
 
@@ -40,9 +38,6 @@ public class AppointmentController {
         }
     }
 
-    // UPDATE: update appointment
-
-    // DELETE: delete appointment
 
     // GET: get all appointments for a given id (caregiver and patient)
 

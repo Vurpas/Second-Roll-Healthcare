@@ -22,7 +22,7 @@ public class AppointmentService {
     @Autowired
     private AvailabilityRepository availabilityRepository;
 
-    // POST: create appointment
+    // POST: create an appointment
     public Appointment createAppointment(AppointmentRequest appointmentRequest) {
         Availability availability = availabilityRepository.findById(appointmentRequest.getAvailabilityId())
                 .orElseThrow(() -> new IllegalArgumentException("Availability with ID " + appointmentRequest.getAvailabilityId() + " not found."));
@@ -44,12 +44,12 @@ public class AppointmentService {
         } else {
                 throw new IllegalArgumentException("The specified date does not exist");
             }
-            // Save to database with repository for appointment
+            // Save to database with repository
             return appointmentRepository.save(appointment);
     }
 
 
-    // PUT: Cancel appointment and set appointment status to CANCELLED
+    // PUT: Cancel appointment and set appointment status to "CANCELLED"
     public Appointment cancelAppointment(String appointmentId) {
         Appointment appointment = appointmentRepository.findById(appointmentId)
                 .orElseThrow(() -> new IllegalArgumentException("Appointment with ID " + appointmentId + " not found."));

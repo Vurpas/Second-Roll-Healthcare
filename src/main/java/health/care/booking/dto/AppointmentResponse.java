@@ -12,7 +12,7 @@ public class AppointmentResponse {
     private LocalDateTime dateTime;
 
     private AppointmentResponse(Appointment appointment) {
-        this.appointmentId = appointment.getAppointmentId();
+        this.appointmentId = appointment.getId();
         this.patientId = appointment.getPatientId().getId();
         this.caregiverId = appointment.getCaregiverId().getId();
         this.dateTime = appointment.getDateTime();
