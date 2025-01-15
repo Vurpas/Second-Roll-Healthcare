@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping(value="/appointment")
 public class AppointmentController {
@@ -16,7 +18,7 @@ public class AppointmentController {
     AppointmentService appointmentService;
 
     @PostMapping()
-    @PreAuthorize("hasRole('USER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<?> createAppointment (@RequestBody AppointmentRequest appointmentRequest) {
         try
         {Appointment appointment = appointmentService.createAppointment(appointmentRequest);
@@ -39,6 +41,11 @@ public class AppointmentController {
     }
 
 
-    // GET: get all appointments for a given id (caregiver and patient)
-
+    // GET: Get ALL appointments
+    @GetMapping("/all")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    public ResponseEntity<?> getAllAppointments() {
+        List<Appointment> allAppointments = appointmentService.getAllAppointments();
+        return ResponseEntity.ok(allAppointments);
+    }
 }

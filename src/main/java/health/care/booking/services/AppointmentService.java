@@ -57,8 +57,9 @@ public class AppointmentService {
         return appointmentRepository.save(appointment);
     }
 
-
-
-    // GET: get all appointments for a given id (caregiver and patient)
+    // GET: get all appointments
+    public List<Appointment> getAllAppointments() {
+        return appointmentRepository.findAll();
+    }
 
 }
