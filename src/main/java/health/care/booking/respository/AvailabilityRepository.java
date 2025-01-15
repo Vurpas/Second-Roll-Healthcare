@@ -9,9 +9,13 @@ public interface AvailabilityRepository extends MongoRepository<Availability, St
 
     Availability findAvailabilityById(String userId);
 
-    Availability findFirstByAvailableSlots(LocalDateTime date);
+    Availability findAvailabilityByAvailableSlotsContaining(LocalDateTime dateTime);
+
+    boolean existsByAvailableSlots(LocalDateTime dateTime);
 
     boolean existsByCaregiverId(String caregiverId);
+
+    void deleteByAvailableSlots(LocalDateTime timeSlot);
 
     //create find
 }

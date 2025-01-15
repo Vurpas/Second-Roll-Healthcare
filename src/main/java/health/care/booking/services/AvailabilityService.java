@@ -80,13 +80,20 @@ public class AvailabilityService {
         return "Availability deleted";
     }
 
-    public String deleteTimeslot(String caregiverId, LocalDateTime timeslot) {
-        if(!availabilityRepository.existsByCaregiverId(caregiverId)) {
-            throw new ObjectNotFoundException("Caregiver with id: " + caregiverId + " was not found.");
+    public String deleteTimeSlot(String caregiverId, LocalDateTime timeSlot) {
+        if (!availabilityRepository.existsByCaregiverId(caregiverId)) {
+            throw new ObjectNotFoundException("No availabilities for the caregiver with id: " + caregiverId + " was found.");
+        } else if (!availabilityRepository.existsByAvailableSlots(timeSlot)) {
+            throw new ObjectNotFoundException("This time slot: ''" + timeSlot + "'' was not found.");
+        } else {
+            int index = availabilityRepository.findAvailabilityByAvailableSlotsContaining(timeSlot).getAvailableSlots().indexOf(timeSlot);
+            List<LocalDateTime> availableSlots = availabilityRepository
+                    .findAvailabilityByAvailableSlotsContaining(timeSlot).getAvailableSlots();
+            availableSlots.remove(index);
         }
 
-        availabilityRepository.deleteById(availabilityId);
-        return "Availability deleted";
+        availabilityRepository.deleteByAvailableSlots(timeSlot);
+        return "Time slot deleted";
     }
 
 }
