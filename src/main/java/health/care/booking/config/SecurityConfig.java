@@ -47,6 +47,7 @@ public class SecurityConfig {
                         // chaina på hasRole eller hasAnyRole
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/user/**").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers("/user/{userId}/delete").hasRole("ADMIN")
                         .requestMatchers("/auth/**").permitAll()
                         //Makes sure only ADMINS can set and change availability
                         .requestMatchers("/availability/**").hasRole("ADMIN")
