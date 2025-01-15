@@ -52,16 +52,15 @@ public class FeedbackService {
     }
 
 
-// Get all posted feedbacks
-public List<Feedback> getAllFeedbacks() {
-    return feedbackRepository.findAll();
-}
+    // Get all posted feedbacks
+    public List<Feedback> getAllFeedbacks() {
+        return feedbackRepository.findAll();
+    }
 
-// Delete Feedback
+    // Delete Feedback
     public String deleteFeedback(String id) {
         feedbackRepository.deleteById(id);
         return "Feedback deleted";
     }
 
 }
-

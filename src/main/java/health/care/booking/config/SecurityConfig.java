@@ -53,7 +53,7 @@ public class SecurityConfig {
                         .requestMatchers("/availability/**").hasRole("ADMIN")
                         //temporary test requestmatcher
                         //.requestMatchers("/availability/**").permitAll()
-                        .requestMatchers("/appointment/**").hasAnyRole( "ADMIN") // the appointment-endpoint only has ADMIN access for now
+                        .requestMatchers("/appointment/**").permitAll() // the appointment-endpoint only has ADMIN access for now
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

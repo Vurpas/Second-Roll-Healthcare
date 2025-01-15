@@ -25,6 +25,7 @@ public class Appointment {
     private Status status;
 
     public Appointment() {
+
     }
 
     public String getId() {
