@@ -94,6 +94,10 @@ public class AvailabilityService {
     }
 
     // VALIDATE if time slot exists for the caregiver that made the request
+    // First it gets all the availabilities linked to a caregiver, then looks if there's an exact copy of the timeslot
+    // If not, the next for loop checks the list of available slots on the same date
+    // If there is nothing on that date, it creates the availability, otherwise it just adds to the existing
+    // availability with the same date and caregiver
     public void validateCaregiversTimeSlots(String caregiverId, LocalDateTime timeslot) {
         List<Availability> caregiversAvailabilities = availabilityRepository.findAvailabilitiesByCaregiverId(caregiverId);
 
