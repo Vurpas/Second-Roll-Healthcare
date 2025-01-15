@@ -80,7 +80,8 @@ public class AuthController {
             AuthResponse authResponse = new AuthResponse(
                     "Login successful",
                     userDetails.getUsername(),
-                    userService.findByUsername(userDetails.getUsername()).getRoles()
+                    userService.findByUsername(userDetails.getUsername()).getRoles(),
+                    userService.findByUsername(userDetails.getUsername()).getId()
             );
 
             return ResponseEntity.ok()
@@ -176,7 +177,8 @@ public class AuthController {
         return ResponseEntity.ok(new AuthResponse(
                 "Authenticated",
                 user.getUsername(),
-                user.getRoles()
+                user.getRoles(),
+                user.getId()
         ));
     }
 

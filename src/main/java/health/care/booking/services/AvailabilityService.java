@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -93,18 +94,29 @@ public class AvailabilityService {
     }
 
     // VALIDATE if time slot exists for the caregiver that made the request
-    /* public Availability doesTimeSlotExist(String caregiverId, LocalDateTime timeSlot) {
-        List<Availability> availabilities = availabilityRepository.findAvailabilitiesByCaregiverId(caregiverId);
+    public void validateCaregiversTimeSlots(String caregiverId, LocalDateTime timeslot) {
+        List<Availability> caregiversAvailabilities = availabilityRepository.findAvailabilitiesByCaregiverId(caregiverId);
 
-        if (availabilities.)) {
-            throw new ObjectNotFoundException("bla bla bla");
+        for (Availability a : caregiversAvailabilities) {
+            if (a.getAvailableSlots().contains(timeslot)) {
+                throw new IllegalArgumentException("Time slot already exists");
+            }
         }
-        return true;
-    } */
+        for (Availability a : caregiversAvailabilities) {
+            if (a.getAvailableSlots().toString().contains(timeslot.toLocalDate().toString())) {
+                addTimeSlot(a.getId(), timeslot);
+                return;
+            }
+        }
+        List<LocalDateTime> availableSlots = new ArrayList<>();
+        availableSlots.add(timeslot);
+        createAvailability(caregiverId, availableSlots);
+    }
 
     // ADD new timeslot to existing availability
     public void addTimeSlot(String availabilityId, LocalDateTime timeSlot) {
-        List<LocalDateTime> availableSlots = availabilityRepository.findAvailabilityById(availabilityId).getAvailableSlots();
-        availableSlots.add(timeSlot);
+        Availability availability = availabilityRepository.findAvailabilityById(availabilityId);
+        availability.getAvailableSlots().add(timeSlot);
+        availabilityRepository.save(availability);
     }
 }

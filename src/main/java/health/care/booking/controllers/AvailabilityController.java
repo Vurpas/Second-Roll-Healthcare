@@ -44,15 +44,15 @@ public class AvailabilityController {
     }
 
     @PatchMapping("/addtimeslot")
-    public ResponseEntity<?> addTimeSlot(@RequestParam String availabilityId, @RequestParam LocalDateTime timeSlot) {
+    public ResponseEntity<?> addTimeSlot(@RequestParam String caregiverId, @RequestParam LocalDateTime timeSlot) {
         try {
-            availabilityService.addTimeSlot(availabilityId, timeSlot);
-            // availabilityService.doesTimeSlotExist(caregiverId, timeSlot);
+            availabilityService.validateCaregiversTimeSlots(caregiverId, timeSlot);
+            // availabilityService.addTimeSlot(availabilityId, timeSlot);
             // availabilityService.addTimeSlot(caregiverId, timeSlot);
-        } catch (ObjectNotFoundException e){
+        } catch (IllegalArgumentException e){
             return ResponseEntity.badRequest().body(e.getMessage());
         }
-        return ResponseEntity.ok("Time slot added");
+        return ResponseEntity.ok("Time slot added: '" + timeSlot + "' ");
     }
 
 
