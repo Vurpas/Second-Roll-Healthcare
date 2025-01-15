@@ -11,7 +11,7 @@ public class AppointmentResponse {
     private String caregiverId;
     private LocalDateTime dateTime;
 
-    public AppointmentResponse(Appointment appointment) {
+    private AppointmentResponse(Appointment appointment) {
         this.appointmentId = appointment.getId();
         this.patientId = appointment.getPatientId().getId();
         this.caregiverId = appointment.getCaregiverId().getId();
@@ -49,5 +49,22 @@ public class AppointmentResponse {
 
     public void setDateTime(LocalDateTime dateTime) {
         this.dateTime = dateTime;
+    }
+
+    // Validation of appointment values.
+    // A response will only be created if all values are present.
+
+    public static AppointmentResponse of(Appointment appointment){
+        if(appointment.getPatientId() == null){
+            throw new IllegalArgumentException("Patient not present");
+        } else if(appointment.getCaregiverId() ==  null) {
+            throw new IllegalArgumentException("CaregiverId is not present");
+        } else if (appointment.getStatus() == null) {
+            throw new IllegalArgumentException("Status is not present");
+        } else if (appointment.getDateTime() == null) {
+            throw new IllegalArgumentException("Date is not present");
+        }else {
+            return new AppointmentResponse(appointment);
+        }
     }
 }
