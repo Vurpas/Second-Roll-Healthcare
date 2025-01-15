@@ -48,4 +48,6 @@ public class AppointmentController {
         List<Appointment> allAppointments = appointmentService.getAllAppointments();
         return ResponseEntity.ok(allAppointments);
     }
+
+    //GET all appointments based on USERNAME
 }

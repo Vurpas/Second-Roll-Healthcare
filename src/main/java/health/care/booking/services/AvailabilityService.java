@@ -41,10 +41,6 @@ public class AvailabilityService {
 
     }
 
-
-
-    // get all availabilities
-
     //UPDATE
     //uppdatera availabilities baserat på id
     // TODO: Create error handling for if oldDate does not exist
@@ -64,12 +60,12 @@ public class AvailabilityService {
         }
     }
 
-
     // GET
     // Get all availabilites
     public List<Availability> getAllAvailabilities() {
         return availabilityRepository.findAll();
     }
+
     //DELETE
     // Delete FULL availability based on ID
     public String deleteAvailability(String availabilityId) {
@@ -80,6 +76,7 @@ public class AvailabilityService {
         return "Availability deleted";
     }
 
+    // DELETE specific time slot
     public String deleteTimeSlot(String caregiverId, LocalDateTime timeSlot) {
         if (!availabilityRepository.existsByCaregiverId(caregiverId)) {
             throw new ObjectNotFoundException("No availabilities for the caregiver with id: " + caregiverId + " was found.");
@@ -91,9 +88,23 @@ public class AvailabilityService {
                     .findAvailabilityByAvailableSlotsContaining(timeSlot).getAvailableSlots();
             availableSlots.remove(index);
         }
-
         availabilityRepository.deleteByAvailableSlots(timeSlot);
         return "Time slot deleted";
     }
 
+    // VALIDATE if time slot exists for the caregiver that made the request
+    /* public Availability doesTimeSlotExist(String caregiverId, LocalDateTime timeSlot) {
+        List<Availability> availabilities = availabilityRepository.findAvailabilitiesByCaregiverId(caregiverId);
+
+        if (availabilities.)) {
+            throw new ObjectNotFoundException("bla bla bla");
+        }
+        return true;
+    } */
+
+    // ADD new timeslot to existing availability
+    public void addTimeSlot(String availabilityId, LocalDateTime timeSlot) {
+        List<LocalDateTime> availableSlots = availabilityRepository.findAvailabilityById(availabilityId).getAvailableSlots();
+        availableSlots.add(timeSlot);
+    }
 }

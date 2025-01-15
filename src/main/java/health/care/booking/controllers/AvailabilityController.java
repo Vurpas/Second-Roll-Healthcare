@@ -43,6 +43,19 @@ public class AvailabilityController {
         return ResponseEntity.ok(allAvailabilities);
     }
 
+    @PatchMapping("/addtimeslot")
+    public ResponseEntity<?> addTimeSlot(@RequestParam String availabilityId, @RequestParam LocalDateTime timeSlot) {
+        try {
+            availabilityService.addTimeSlot(availabilityId, timeSlot);
+            // availabilityService.doesTimeSlotExist(caregiverId, timeSlot);
+            // availabilityService.addTimeSlot(caregiverId, timeSlot);
+        } catch (ObjectNotFoundException e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+        return ResponseEntity.ok("Time slot added");
+    }
+
+
     // PUT - Update availability
     // A caregiver can change the time or date on the availability.
     //
