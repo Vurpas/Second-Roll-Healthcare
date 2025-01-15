@@ -71,8 +71,22 @@ public class AvailabilityService {
         return availabilityRepository.findAll();
     }
     //DELETE
-    // Delete availability based on ID
-    public Availability deleteAvailability(String availabilityId) {
-
+    // Delete FULL availability based on ID
+    public String deleteAvailability(String availabilityId) {
+        if(!availabilityRepository.existsById(availabilityId)) {
+            throw new ObjectNotFoundException("Availability with id: " + availabilityId + " was not found.");
+        }
+        availabilityRepository.deleteById(availabilityId);
+        return "Availability deleted";
     }
+
+    public String deleteTimeslot(String caregiverId, LocalDateTime timeslot) {
+        if(!availabilityRepository.existsByCaregiverId(caregiverId)) {
+            throw new ObjectNotFoundException("Caregiver with id: " + caregiverId + " was not found.");
+        }
+
+        availabilityRepository.deleteById(availabilityId);
+        return "Availability deleted";
+    }
+
 }
