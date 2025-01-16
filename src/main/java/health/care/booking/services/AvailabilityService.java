@@ -2,8 +2,10 @@ package health.care.booking.services;
 
 
 import health.care.booking.exceptions.ObjectNotFoundException;
+import health.care.booking.models.Appointment;
 import health.care.booking.models.Availability;
 import health.care.booking.models.User;
+import health.care.booking.respository.AppointmentRepository;
 import health.care.booking.respository.AvailabilityRepository;
 import health.care.booking.respository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,8 @@ public class AvailabilityService {
     UserRepository userRepository;
     @Autowired
     AvailabilityRepository availabilityRepository;
+    @Autowired
+    AppointmentRepository appointmentRepository;
 
 
 
@@ -100,7 +104,11 @@ public class AvailabilityService {
     // availability with the same date and caregiver
     public void validateCaregiversTimeSlots(String caregiverId, LocalDateTime timeslot) {
         List<Availability> caregiversAvailabilities = availabilityRepository.findAvailabilitiesByCaregiverId(caregiverId);
-
+        User user = userRepository.findUserById(caregiverId);
+        Appointment appointment = appointmentRepository.findAppointmentByCaregiverIdAndDateTime(user, timeslot);
+        if (appointment != null && appointment.getDateTime().equals(timeslot)) {
+            throw new IllegalArgumentException("Time slot already exists in a booked appointment");
+        }
         for (Availability a : caregiversAvailabilities) {
             if (a.getAvailableSlots().contains(timeslot)) {
                 throw new IllegalArgumentException("Time slot already exists");
