@@ -43,13 +43,19 @@ public class AvailabilityController {
         return ResponseEntity.ok(allAvailabilities);
     }
 
+    @PatchMapping("/addtimeslot")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> addTimeSlot(@RequestParam String caregiverId, @RequestParam LocalDateTime timeSlot) {
+        try {
+            availabilityService.validateCaregiversTimeSlots(caregiverId, timeSlot);
+        } catch (IllegalArgumentException e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+        return ResponseEntity.ok("Time slot added: '" + timeSlot + "' ");
+    }
+
     // PUT - Update availability
     // A caregiver can change the time or date on the availability.
-    //
-    // TODO: Discuss the future of the availability setup. Maybe one caregiver should have only ONE availability
-    //  where the list of availableSlots is being filled/updated by the caretaker, instead of creating a new
-    //  availability and a new list for every time the caretaker adds more availableSlots.
-
     @PutMapping("/update")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> updateAvailability

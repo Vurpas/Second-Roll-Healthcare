@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -41,10 +42,6 @@ public class AvailabilityService {
 
     }
 
-
-
-    // get all availabilities
-
     //UPDATE
     //uppdatera availabilities baserat på id
     // TODO: Create error handling for if oldDate does not exist
@@ -64,12 +61,12 @@ public class AvailabilityService {
         }
     }
 
-
     // GET
     // Get all availabilites
     public List<Availability> getAllAvailabilities() {
         return availabilityRepository.findAll();
     }
+
     //DELETE
     // Delete FULL availability based on ID
     public String deleteAvailability(String availabilityId) {
@@ -80,6 +77,7 @@ public class AvailabilityService {
         return "Availability deleted";
     }
 
+    // DELETE specific time slot
     public String deleteTimeSlot(String caregiverId, LocalDateTime timeSlot) {
         if (!availabilityRepository.existsByCaregiverId(caregiverId)) {
             throw new ObjectNotFoundException("No availabilities for the caregiver with id: " + caregiverId + " was found.");
@@ -91,9 +89,38 @@ public class AvailabilityService {
                     .findAvailabilityByAvailableSlotsContaining(timeSlot).getAvailableSlots();
             availableSlots.remove(index);
         }
-
         availabilityRepository.deleteByAvailableSlots(timeSlot);
         return "Time slot deleted";
     }
 
+    // VALIDATE if time slot exists for the caregiver that made the request
+    // First it gets all the availabilities linked to a caregiver, then looks if there's an exact copy of the timeslot
+    // If not, the next for loop checks the list of available slots on the same date
+    // If there is nothing on that date, it creates the availability, otherwise it just adds to the existing
+    // availability with the same date and caregiver
+    public void validateCaregiversTimeSlots(String caregiverId, LocalDateTime timeslot) {
+        List<Availability> caregiversAvailabilities = availabilityRepository.findAvailabilitiesByCaregiverId(caregiverId);
+
+        for (Availability a : caregiversAvailabilities) {
+            if (a.getAvailableSlots().contains(timeslot)) {
+                throw new IllegalArgumentException("Time slot already exists");
+            }
+        }
+        for (Availability a : caregiversAvailabilities) {
+            if (a.getAvailableSlots().toString().contains(timeslot.toLocalDate().toString())) {
+                addTimeSlot(a.getId(), timeslot);
+                return;
+            }
+        }
+        List<LocalDateTime> availableSlots = new ArrayList<>();
+        availableSlots.add(timeslot);
+        createAvailability(caregiverId, availableSlots);
+    }
+
+    // ADD new timeslot to existing availability
+    public void addTimeSlot(String availabilityId, LocalDateTime timeSlot) {
+        Availability availability = availabilityRepository.findAvailabilityById(availabilityId);
+        availability.getAvailableSlots().add(timeSlot);
+        availabilityRepository.save(availability);
+    }
 }

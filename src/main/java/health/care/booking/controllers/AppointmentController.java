@@ -8,10 +8,9 @@ import health.care.booking.services.AppointmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping(value="/appointment")
@@ -32,5 +31,14 @@ public class AppointmentController {
     // DELETE: delete appointment
 
     // GET: get all appointments for a given id (caregiver and patient)
+
+    // GET: Get ALL appointments
+    @GetMapping("/all")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    public ResponseEntity<?> getAllAppointments() {
+        List<Appointment> allAppointments = appointmentService.getAllAppointments();
+        return ResponseEntity.ok(allAppointments);
+    }
+    //GET all appointments based on USERNAME
 
 }
