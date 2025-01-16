@@ -4,9 +4,9 @@ import java.time.LocalDateTime;
 
 public class AppointmentRequest {
 
-    private final LocalDateTime appointmentDate;
-    private final String patientId;
-    private final String availabilityId;
+    public LocalDateTime appointmentDate;
+    public String patientId;
+    public String availabilityId;
 
     public AppointmentRequest(LocalDateTime appointmentDate, String patientId, String availabilityId) {
         this.availabilityId = availabilityId;
@@ -24,5 +24,18 @@ public class AppointmentRequest {
 
     public String getAvailabilityId() {
         return availabilityId;
+    }
+
+
+    public void setAppointmentDate(LocalDateTime appointmentDate) {
+        this.appointmentDate = appointmentDate;
+    }
+
+    public void setPatientId(String patientId) {
+        this.patientId = patientId;
+    }
+
+    public void setAvailabilityId(String availabilityId) {
+        this.availabilityId = availabilityId;
     }
 }

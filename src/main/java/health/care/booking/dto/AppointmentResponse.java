@@ -11,7 +11,7 @@ public class AppointmentResponse {
     private String caregiverId;
     private LocalDateTime dateTime;
 
-    private AppointmentResponse(Appointment appointment) {
+    public AppointmentResponse(Appointment appointment) {
         this.appointmentId = appointment.getId();
         this.patientId = appointment.getPatientId().getId();
         this.caregiverId = appointment.getCaregiverId().getId();
