@@ -7,15 +7,17 @@ import health.care.booking.respository.UserRepository;
 import health.care.booking.services.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-
+@ExtendWith(MockitoExtension.class)
 public class UserServiceTests {
 
     // mock user repository
@@ -179,5 +181,37 @@ public class UserServiceTests {
 
         // ensure that userRepository.save() was not called
         verify(userRepository, times(0)).save(any(User.class));
+    }
+
+    @Test
+    void testDeleteUser_Success() {
+        String userId = "123";
+
+        // Mock the behaviour of the repository
+        when(userRepository.existsById(userId)).thenReturn(true);
+
+        // Call the method
+        String result = userService.deleteUser(userId);
+
+        // Verify the expected result
+        assertEquals("User deleted", result);
+        verify(userRepository, times(1)).deleteById(userId);
+
+    }
+
+    @Test
+    void testDeleteUser_UserNotFound() {
+        String userId = "123";
+
+        // Mock the behaviour of the repository
+        when(userRepository.existsById(userId)).thenReturn(false);
+
+        // Call the method and assert that the exception is thrown
+        UserNotFoundException exception = assertThrows(UserNotFoundException.class, () -> {
+                userService.deleteUser(userId);
+        });
+
+        assertEquals("User with id: 123 was not found.", exception.getMessage());
+        verify(userRepository, never()).deleteById(userId); // Ensure delete was never called
     }
 }
