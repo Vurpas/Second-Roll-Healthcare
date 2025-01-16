@@ -1,5 +1,6 @@
 package health.care.booking;
 
+import health.care.booking.exceptions.ObjectNotFoundException;
 import health.care.booking.models.Availability;
 import health.care.booking.models.User;
 import health.care.booking.respository.AvailabilityRepository;
@@ -7,9 +8,11 @@ import health.care.booking.respository.UserRepository;
 import health.care.booking.services.AvailabilityService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -20,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 public class AvailabilityServiceTests {
     //mocka repository
     @Mock
@@ -114,6 +118,67 @@ public class AvailabilityServiceTests {
 
         // verify that the save method in availability repository never gets called
         verifyNoInteractions(availabilityRepository);
+    }
+
+    @Test
+    void testUpdateAvailability_Success() {
+        String availabilityId = "avail123";
+        LocalDateTime oldDate = LocalDateTime.of(2025, 1, 16, 10, 0);
+        LocalDateTime newDate = LocalDateTime.of(2025, 1, 16, 12, 0);
+
+        // Mock the repository to return an Availability object with slots
+        Availability mockAvailability = mock(Availability.class);
+        List<LocalDateTime> availableSlots = Arrays.asList(oldDate, LocalDateTime.of(2025, 1, 16, 14, 0));
+        when(availabilityRepository.existsById(availabilityId)).thenReturn(true);
+        when(availabilityRepository.findAvailabilityById(availabilityId)).thenReturn(mockAvailability);
+        when(mockAvailability.getAvailableSlots()).thenReturn(availableSlots);
+
+        // Call the method
+        Availability result = availabilityService.updateAvailability(availabilityId,oldDate,newDate);
+
+        // Verify that theavailability was updated and saved
+        assertNotNull(result);
+        assertTrue(result.getAvailableSlots().contains(newDate));
+        verify(availabilityRepository, times(1)).save(mockAvailability);
+    }
+
+    @Test
+    void testUpdateAvailability_AvailabilityNotFound() {
+        String availabilityID = "avail123";
+        LocalDateTime oldDate = LocalDateTime.of(2025, 1, 16, 10, 0);
+        LocalDateTime newDate = LocalDateTime.of(2025, 1, 16, 12, 0);
+
+        // Mock the repository to simulate the absence of the availability
+        when(availabilityRepository.existsById(availabilityID)).thenReturn(false);
+
+        // Call the method and assert that the exception is thrown
+        ObjectNotFoundException exception = assertThrows(ObjectNotFoundException.class, () -> {
+            availabilityService.updateAvailability(availabilityID, oldDate, newDate);
+        });
+
+        assertEquals("Availability with id avail123 was not found.", exception.getMessage());
+        verify(availabilityRepository, never()).save(any(Availability.class)); // Ensure save was never called
+    }
+
+    @Test
+    void testUpdateAvailability_OldDateNotFound() {
+        String availabilityId = "avail123";
+        LocalDateTime oldDate = LocalDateTime.of(2025, 1, 16, 10, 0);
+        LocalDateTime newDate = LocalDateTime.of(2025, 1, 16, 12, 0);
+
+        // Mock the repository to return an Availability object with slots
+        Availability mockAvailability = mock(Availability.class);
+        List<LocalDateTime> availableSlots = Arrays.asList(LocalDateTime.of(2025, 1, 16, 14, 0));
+        when(availabilityRepository.existsById(availabilityId)).thenReturn(true);
+        when(availabilityRepository.findAvailabilityById(availabilityId)).thenReturn(mockAvailability);
+        when(mockAvailability.getAvailableSlots()).thenReturn(availableSlots);
+
+        // Call the method and assert that the slots were not updated
+        Availability result = availabilityService.updateAvailability(availabilityId, oldDate, newDate);
+
+        assertNotNull(result);
+        assertFalse(result.getAvailableSlots().contains(newDate)); // Ensure the old slot was not replaced
+        verify(availabilityRepository, never()).save(mockAvailability); // Ensure save was not called
     }
 
 
