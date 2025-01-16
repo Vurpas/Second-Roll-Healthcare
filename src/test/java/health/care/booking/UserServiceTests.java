@@ -12,6 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -93,6 +94,26 @@ public class UserServiceTests {
 
         // verify that userRepository.save() only gets called once with a User object
         verify(userRepository, times(1)).save(any(User.class));
+    }
+
+    @Test
+    void testRegisterUser_UserAlreadyExists() {
+        User user = new User();
+        user.setUsername("existingUser");
+        user.setPassword("password123");
+
+        // Mock the behaviour of password encoding
+        when(passwordEncoder.encode(user.getPassword())).thenReturn("encodedPassword123");
+        // Simulate a DataIntegrityViolationException, e.g., unique constraint violation
+        when(userRepository.save(user)).thenThrow(new DataIntegrityViolationException("Unique constraint violation"));
+
+        // Call the method and assert that the exception is thrown
+        DataIntegrityViolationException exception = assertThrows(DataIntegrityViolationException.class, () -> {
+            userService.registerUser(user);
+        });
+
+        assertEquals("Unique constraint violation", exception.getMessage());
+        verify(userRepository, times(1)).save(user); // Ensure save was called once
     }
 
     /**
