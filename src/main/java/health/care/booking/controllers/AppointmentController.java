@@ -3,6 +3,7 @@ package health.care.booking.controllers;
 
 import health.care.booking.dto.AppointmentRequest;
 import health.care.booking.dto.AppointmentResponse;
+import health.care.booking.exceptions.ObjectNotFoundException;
 import health.care.booking.models.Appointment;
 import health.care.booking.services.AppointmentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,18 +20,29 @@ public class AppointmentController {
     @Autowired
     AppointmentService appointmentService;
 
+    // POST: Create appointment
     @PostMapping()
-    @PreAuthorize("hasRole('USER', 'ADMIN')")
-    public ResponseEntity<AppointmentResponse> createAppointment(@RequestBody AppointmentRequest appointmentRequest) {
-        Appointment appointment = appointmentService.createAppointment(appointmentRequest);
-        return ResponseEntity.ok(new AppointmentResponse(appointment));
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    public ResponseEntity<?> createAppointment (@RequestBody AppointmentRequest appointmentRequest) {
+        try
+        {Appointment appointment = appointmentService.createAppointment(appointmentRequest);
+            return ResponseEntity.ok(AppointmentResponse.of(appointment));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
-    // UPDATE: update appointment
-
-    // DELETE: delete appointment
-
-    // GET: get all appointments for a given id (caregiver and patient)
+    // PUT: change the appointment status to CANCELLED
+    @PutMapping(value="/cancel/{appointmentId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> cancelAppointment (@PathVariable String appointmentId) {
+        try {
+            Appointment appointment = appointmentService.cancelAppointment(appointmentId);
+            return ResponseEntity.ok(AppointmentResponse.of(appointment));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 
     // GET: Get ALL appointments
     @GetMapping("/all")
@@ -39,6 +51,16 @@ public class AppointmentController {
         List<Appointment> allAppointments = appointmentService.getAllAppointments();
         return ResponseEntity.ok(allAppointments);
     }
-    //GET all appointments based on USERNAME
 
+    //GET all appointments based on userId, caregiver and patient
+    @GetMapping("/getbyid")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    public ResponseEntity<?> getAllAppointmentsByUserId(@RequestParam String userId) {
+        try {
+            List<Appointment> allAppointments = appointmentService.getAllAppointmentsByUserId(userId);
+            return ResponseEntity.ok(allAppointments);
+        } catch (ObjectNotFoundException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }
