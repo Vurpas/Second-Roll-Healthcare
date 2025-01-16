@@ -1,6 +1,7 @@
 package health.care.booking.services;
 
 import health.care.booking.dto.AppointmentRequest;
+import health.care.booking.exceptions.ObjectNotFoundException;
 import health.care.booking.models.Appointment;
 import health.care.booking.models.Availability;
 import health.care.booking.models.Status;
@@ -62,4 +63,12 @@ public class AppointmentService {
         return appointmentRepository.findAll();
     }
 
+    public List<Appointment> getAllAppointmentsByUserId(String userId) {
+        User user = userRepository.findUserById(userId);
+        List<Appointment> foundAppointments = appointmentRepository.findAllByCaregiverIdOrPatientId(user, user);
+        if (foundAppointments == null || foundAppointments.isEmpty()) {
+            throw new ObjectNotFoundException("No appointments found for user with id: '" + userId + "'");
+        } else
+            return foundAppointments;
+    }
 }
