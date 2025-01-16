@@ -11,9 +11,13 @@ import health.care.booking.respository.AvailabilityRepository;
 import health.care.booking.respository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,6 +29,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class AppointmentServiceTest {
 
     @Mock
@@ -72,6 +78,7 @@ public class AppointmentServiceTest {
         caregiver = new User();
         caregiver.setId("100");
 
+
         when(availabilityRepository.findById("1")).thenReturn(Optional.of(availability));
         when(userRepository.findById("100")).thenReturn(Optional.of(patient));
     }
@@ -118,6 +125,45 @@ public class AppointmentServiceTest {
             IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
                     appointmentService.createAppointment(validAppointmentRequest));
             assertEquals("The specified date does not exist", exception.getMessage());
+        }
+
+        @Test
+    void testCancelAppointment() {
+        String appointmentId = "apt123";
+
+        // Create a mock appointment object
+            Appointment mockAppointment = new Appointment();
+            mockAppointment.setId(appointmentId);
+            mockAppointment.setStatus(Status.SCHEDULED);
+
+            // Mock the repository´s behavior
+            when(appointmentRepository.findById(appointmentId)).thenReturn(Optional.of(mockAppointment));
+            when(appointmentRepository.save(mockAppointment)).thenReturn(mockAppointment);
+
+            // Call the method
+            Appointment result = appointmentService.cancelAppointment(appointmentId);
+
+            // Verify that the appointment's status is updated
+            assertEquals(Status.CANCELLED, result.getStatus());
+            verify(appointmentRepository, times(1)).save(mockAppointment); // Ensure save was called once
+
+        }
+
+        @Test
+    void testCancelAppointment_Failure_AppointmentNotFound() {
+        String appointmentId = "apt123";
+
+        // Mock the repository to return an empty Optional, simulating a non-existing appointment
+            when(appointmentRepository.findById(appointmentId)).thenReturn(Optional.empty());
+
+            // Call the method and assert that the exception is thrown
+            IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+                appointmentService.cancelAppointment(appointmentId);
+            });
+
+            // Verify the exception message
+            assertEquals("Appointment with ID apt123 not found.", exception.getMessage());
+            verify(appointmentRepository, never()).save(any(Appointment.class)); // Ensure save was never called
         }
     }
 
