@@ -46,8 +46,14 @@ public class SecurityConfig {
                         //fyll på här när ni lägger till controllers, vill ni ha rollbaserat
                         // chaina på hasRole eller hasAnyRole
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/user/**").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers("/user/{userId}/delete").hasRole("ADMIN")
                         .requestMatchers("/auth/**").permitAll()
+                        //Makes sure only ADMINS can set and change availability
+                        .requestMatchers("/availability/**").hasRole("ADMIN")
+                        //temporary test requestmatcher
+                        //.requestMatchers("/availability/**").permitAll()
+                        .requestMatchers("/appointment/**").permitAll() // the appointment-endpoint only has ADMIN access for now
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
