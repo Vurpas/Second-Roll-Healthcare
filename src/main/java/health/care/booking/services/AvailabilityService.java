@@ -8,7 +8,6 @@ import health.care.booking.models.User;
 import health.care.booking.respository.AppointmentRepository;
 import health.care.booking.respository.AvailabilityRepository;
 import health.care.booking.respository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -17,15 +16,16 @@ import java.util.List;
 
 @Service
 public class AvailabilityService {
+    private final UserRepository userRepository;
+    private final AvailabilityRepository availabilityRepository;
+    private final AppointmentRepository appointmentRepository;
 
-    @Autowired
-    UserRepository userRepository;
-    @Autowired
-    AvailabilityRepository availabilityRepository;
-    @Autowired
-    AppointmentRepository appointmentRepository;
-
-
+    public AvailabilityService(UserRepository userRepository, AvailabilityRepository availabilityRepository,
+                               AppointmentRepository appointmentRepository) {
+        this.userRepository = userRepository;
+        this.availabilityRepository = availabilityRepository;
+        this.appointmentRepository = appointmentRepository;
+    }
 
     //POST
     //skapa create availability metod

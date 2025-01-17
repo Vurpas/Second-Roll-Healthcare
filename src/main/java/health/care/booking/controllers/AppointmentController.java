@@ -6,7 +6,6 @@ import health.care.booking.dto.AppointmentResponse;
 import health.care.booking.exceptions.ObjectNotFoundException;
 import health.care.booking.models.Appointment;
 import health.care.booking.services.AppointmentService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -16,9 +15,10 @@ import java.util.List;
 @RestController
 @RequestMapping(value="/appointment")
 public class AppointmentController {
-
-    @Autowired
-    AppointmentService appointmentService;
+    private final AppointmentService appointmentService;
+    public AppointmentController(AppointmentService appointmentService) {
+        this.appointmentService = appointmentService;
+    }
 
     // POST: Create appointment
     @PostMapping()

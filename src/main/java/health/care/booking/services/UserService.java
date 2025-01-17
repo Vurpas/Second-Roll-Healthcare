@@ -16,8 +16,11 @@ import java.util.Set;
 
 @Service
 public class UserService {
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @Autowired
     private PasswordEncoder passwordEncoder;

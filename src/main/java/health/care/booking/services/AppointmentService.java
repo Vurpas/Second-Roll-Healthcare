@@ -9,7 +9,6 @@ import health.care.booking.models.User;
 import health.care.booking.respository.AppointmentRepository;
 import health.care.booking.respository.AvailabilityRepository;
 import health.care.booking.respository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -18,12 +17,16 @@ import java.util.List;
 
 @Service
 public class AppointmentService {
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private AppointmentRepository appointmentRepository;
-    @Autowired
-    private AvailabilityRepository availabilityRepository;
+    private final UserRepository userRepository;
+    private final AvailabilityRepository availabilityRepository;
+    private final AppointmentRepository appointmentRepository;
+
+    public AppointmentService(UserRepository userRepository, AvailabilityRepository availabilityRepository,
+                               AppointmentRepository appointmentRepository) {
+        this.userRepository = userRepository;
+        this.availabilityRepository = availabilityRepository;
+        this.appointmentRepository = appointmentRepository;
+    }
 
     // POST: create an appointment
     public Appointment createAppointment(AppointmentRequest appointmentRequest) {

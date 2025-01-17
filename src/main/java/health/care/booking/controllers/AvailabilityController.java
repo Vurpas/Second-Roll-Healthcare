@@ -3,10 +3,7 @@ package health.care.booking.controllers;
 
 import health.care.booking.exceptions.ObjectNotFoundException;
 import health.care.booking.models.Availability;
-import health.care.booking.respository.AvailabilityRepository;
-import health.care.booking.respository.UserRepository;
 import health.care.booking.services.AvailabilityService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -14,18 +11,13 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
-//skall det vara Restcontroller och RequestMapping anotations här?
 @RestController
 @RequestMapping(value ="/availability")
 public class AvailabilityController {
-    //Autowirea availabilityService och AvailabilityRepository?
-    @Autowired
-    AvailabilityService availabilityService;
-    @Autowired
-    UserRepository userRepository;
-    @Autowired
-    AvailabilityRepository availabilityRepository;
-
+    private final AvailabilityService availabilityService;
+    public AvailabilityController(AvailabilityService availabilityService) {
+        this.availabilityService = availabilityService;
+    }
 
     @PostMapping("/create")
     @PreAuthorize("hasRole('ADMIN')")

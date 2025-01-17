@@ -8,7 +8,6 @@ import health.care.booking.models.User;
 import health.care.booking.respository.AppointmentRepository;
 import health.care.booking.respository.FeedbackRepository;
 import health.care.booking.respository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -16,12 +15,16 @@ import java.util.List;
 
 @Service
 public class FeedbackService {
-    @Autowired
-    FeedbackRepository feedbackRepository;
-    @Autowired
-    UserRepository userRepository;
-    @Autowired
-    AppointmentRepository appointmentRepository;
+    private final UserRepository userRepository;
+    private final FeedbackRepository feedbackRepository;
+    private final AppointmentRepository appointmentRepository;
+
+    public FeedbackService(UserRepository userRepository, FeedbackRepository feedbackRepository,
+                              AppointmentRepository appointmentRepository) {
+        this.userRepository = userRepository;
+        this.feedbackRepository = feedbackRepository;
+        this.appointmentRepository = appointmentRepository;
+    }
 
     // Create feedback
     public Feedback createFeedback(CreateFeedbackDTO createFeedbackDTO) {
