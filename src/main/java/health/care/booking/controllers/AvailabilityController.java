@@ -93,4 +93,14 @@ public class AvailabilityController {
     }
 
     //GET hämta alla availabilities för specifik vårdgivare baserat på userId
+    @GetMapping("/findbyid")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    public ResponseEntity<?> getAllAvailabilitiesByCaregiverId(@RequestParam String caregiverId) {
+        try {
+            List<Availability> foundAvailabilities = availabilityService.getAllAvailabilitiesByCaregiverId(caregiverId);
+            return ResponseEntity.ok(foundAvailabilities);
+        } catch (ObjectNotFoundException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }
