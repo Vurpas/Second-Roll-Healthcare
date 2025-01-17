@@ -11,7 +11,9 @@ import health.care.booking.respository.AvailabilityRepository;
 import health.care.booking.respository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -69,6 +71,7 @@ public class AppointmentService {
         if (foundAppointments == null || foundAppointments.isEmpty()) {
             throw new ObjectNotFoundException("No appointments found for user with id: '" + userId + "'");
         } else
-            return foundAppointments;
+            foundAppointments.sort(Comparator.comparing(Appointment::getDateTime));
+        return foundAppointments;
     }
 }
