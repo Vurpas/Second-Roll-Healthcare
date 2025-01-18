@@ -50,9 +50,9 @@ public class SecurityConfig {
                         .requestMatchers("/user/{userId}/delete").hasRole("ADMIN")
                         .requestMatchers("/auth/**").permitAll()
                         //Makes sure only ADMINS can set and change availability
-                        .requestMatchers("/availability/**").hasRole("ADMIN")
+                        //.requestMatchers("/availability/**").hasRole("ADMIN")
                         //temporary test requestmatcher
-                        //.requestMatchers("/availability/**").permitAll()
+                        .requestMatchers("/availability/**").permitAll()
                         .requestMatchers("/appointment/**").permitAll() // the appointment-endpoint only has ADMIN access for now
                         .anyRequest().authenticated()
                 )

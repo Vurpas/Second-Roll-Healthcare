@@ -1,6 +1,7 @@
 package health.care.booking.controllers;
 
 
+import health.care.booking.dto.AvailabilityDTO;
 import health.care.booking.exceptions.ObjectNotFoundException;
 import health.care.booking.models.Availability;
 import health.care.booking.respository.AvailabilityRepository;
@@ -27,11 +28,11 @@ public class AvailabilityController {
     AvailabilityRepository availabilityRepository;
 
 
-    @PostMapping("/create")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping()
+    //@PreAuthorize("hasRole('ADMIN')")
     // OBS create error handling for entered availability is not already existing
-    public ResponseEntity<Availability> createAvailability(@RequestParam String caregiverId, @RequestBody List<LocalDateTime> availableSlots){
-        Availability availability = availabilityService.createAvailability(caregiverId, availableSlots);
+    public ResponseEntity<Availability> createAvailability(@RequestBody AvailabilityDTO availabilityDTO){
+        Availability availability = availabilityService.createAvailability(availabilityDTO);
         return ResponseEntity.ok(availability);
     }
 
@@ -47,7 +48,7 @@ public class AvailabilityController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> addTimeSlot(@RequestParam String caregiverId, @RequestParam LocalDateTime timeSlot) {
         try {
-            availabilityService.validateCaregiversTimeSlots(caregiverId, timeSlot);
+      //      availabilityService.validateCaregiversTimeSlots(caregiverId, timeSlot);
         } catch (IllegalArgumentException e){
             return ResponseEntity.badRequest().body(e.getMessage());
         }

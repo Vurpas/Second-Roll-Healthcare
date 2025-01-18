@@ -1,6 +1,7 @@
 package health.care.booking.services;
 
 
+import health.care.booking.dto.AvailabilityDTO;
 import health.care.booking.exceptions.ObjectNotFoundException;
 import health.care.booking.models.Appointment;
 import health.care.booking.models.Availability;
@@ -33,14 +34,14 @@ public class AvailabilityService {
 
     // OBS create error handling for unorthorized attempts to create availability
     // and check that entered availability is not already excisting! OBS
-    public Availability createAvailability (String caregiverId, List<LocalDateTime> availableSlots) {
+    public Availability createAvailability (AvailabilityDTO availabilityDTO) {
 
-        User caregiver = userRepository.findById(caregiverId)
-                .orElseThrow(() -> new IllegalArgumentException("Caregiver with ID " + caregiverId + " not found"));
+        User caregiver = userRepository.findById(availabilityDTO.getCaregiverId())
+                .orElseThrow(() -> new IllegalArgumentException("Caregiver with ID " + availabilityDTO.getCaregiverId() + " not found"));
 
         Availability availability = new Availability();
         availability.setCaregiverId(caregiver);
-        availability.setAvailableSlots(availableSlots);
+        availability.setAvailableSlots(availabilityDTO.getAvailableSlots());
 
         return availabilityRepository.save(availability);
 
@@ -97,11 +98,15 @@ public class AvailabilityService {
         return "Time slot deleted";
     }
 
+
+
     // VALIDATE if time slot exists for the caregiver that made the request
     // First it gets all the availabilities linked to a caregiver, then looks if there's an exact copy of the timeslot
     // If not, the next for loop checks the list of available slots on the same date
     // If there is nothing on that date, it creates the availability, otherwise it just adds to the existing
     // availability with the same date and caregiver
+
+    // har bytt till DTO, denna behöver uppdateras till att använda DTO om det ska funka.
     public void validateCaregiversTimeSlots(String caregiverId, LocalDateTime timeslot) {
         List<Availability> caregiversAvailabilities = availabilityRepository.findAvailabilitiesByCaregiverId(caregiverId);
         User user = userRepository.findUserById(caregiverId);
@@ -122,7 +127,7 @@ public class AvailabilityService {
         }
         List<LocalDateTime> availableSlots = new ArrayList<>();
         availableSlots.add(timeslot);
-        createAvailability(caregiverId, availableSlots);
+        //createAvailability(caregiverId, availableSlots);
     }
 
     // ADD new timeslot to existing availability
