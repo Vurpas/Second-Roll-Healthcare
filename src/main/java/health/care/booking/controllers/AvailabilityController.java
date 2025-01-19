@@ -94,6 +94,9 @@ public class AvailabilityController {
     }
 
     //GET hämta alla availabilities för specifik vårdgivare baserat på userId
+    // changed to PathVariable instead of RequestParam because its not necessary
+    // PathVariable follows standard practices. and this needs to allow availabilities for a caregiver to be empty.
+    // as it was before the App crashes in frontend due to error message 400 bad request "No availabilites found for this caregiver ID"
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public ResponseEntity<?> getAllAvailabilitiesByCaregiverId(@PathVariable String id) {
