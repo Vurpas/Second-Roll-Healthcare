@@ -74,4 +74,15 @@ public class AppointmentService {
             foundAppointments.sort(Comparator.comparing(Appointment::getDateTime));
         return foundAppointments;
     }
+
+   /*@GetMapping("/id")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    public ResponseEntity<?> getAppointmentById(@RequestParam String appointmentId) {
+        try {
+            Appointment appointment = appointmentService.getAppointmentById(appointmentId);
+            return ResponseEntity.ok().body(appointment);
+        } catch (ObjectNotFoundException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }*/
 }
