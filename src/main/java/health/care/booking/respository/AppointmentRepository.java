@@ -15,4 +15,6 @@ public interface AppointmentRepository extends MongoRepository<Appointment, Stri
    Appointment findAppointmentByCaregiverIdAndDateTime(User caregiverId, LocalDateTime dateTime);
    List<Appointment> findAllByCaregiverIdOrPatientId(User caregiverId, User patientId);
 
+   Appointment getAppointmentById(String appointmentId);
+
 }
