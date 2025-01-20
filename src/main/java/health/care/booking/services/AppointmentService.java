@@ -12,6 +12,7 @@ import health.care.booking.respository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -76,5 +77,18 @@ public class AppointmentService {
         } else
             foundAppointments.sort(Comparator.comparing(Appointment::getDateTime));
         return foundAppointments;
+    }
+
+    public List<Appointment> getAllAppointmentsByUserIdAndDate(String userId, String currentDate) {
+        User user = userRepository.findUserById(userId);
+        List<Appointment> todaysAppointments = new ArrayList<>();
+        List<Appointment> foundAppointments = appointmentRepository.findAllByCaregiverIdOrPatientId(user, user);
+        for (Appointment a : foundAppointments) {
+            if (a.getDateTime().toString().contains(currentDate)) {
+                todaysAppointments.add(a);
+            }
+        }
+        todaysAppointments.sort(Comparator.comparing(Appointment::getDateTime));
+        return todaysAppointments;
     }
 }
