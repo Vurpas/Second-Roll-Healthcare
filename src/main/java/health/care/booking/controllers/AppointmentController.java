@@ -53,12 +53,23 @@ public class AppointmentController {
     }
 
     //GET all appointments based on userId, caregiver and patient
-    @GetMapping("/getbyid")
+    /*@GetMapping("/getbyid")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<?> getAllAppointmentsByUserId(@RequestParam String userId) {
         try {
             List<Appointment> allAppointments = appointmentService.getAllAppointmentsByUserId(userId);
             return ResponseEntity.ok(allAppointments);
+        } catch (ObjectNotFoundException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }*/
+
+    @GetMapping("/id")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    public ResponseEntity<?> getAppointmentById(@RequestParam String appointmentId) {
+        try {
+            Appointment appointment = appointmentService.getAppointmentById(appointmentId);
+            return ResponseEntity.ok().body(appointment);
         } catch (ObjectNotFoundException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

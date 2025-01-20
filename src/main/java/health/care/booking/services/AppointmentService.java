@@ -65,7 +65,7 @@ public class AppointmentService {
         return appointmentRepository.findAll();
     }
 
-    public List<Appointment> getAllAppointmentsByUserId(String userId) {
+    /*public List<Appointment> getAllAppointmentsByUserId(String userId) {
         User user = userRepository.findUserById(userId);
         List<Appointment> foundAppointments = appointmentRepository.findAllByCaregiverIdOrPatientId(user, user);
         if (foundAppointments == null || foundAppointments.isEmpty()) {
@@ -73,16 +73,14 @@ public class AppointmentService {
         } else
             foundAppointments.sort(Comparator.comparing(Appointment::getDateTime));
         return foundAppointments;
+    }*/
+
+    public Appointment getAppointmentById(String appointmentId) {
+        if (!appointmentRepository.existsById(appointmentId)) {
+            throw new ObjectNotFoundException("No appointments found with id: '" + appointmentId + "'");
+        } else {
+            return appointmentRepository.getAppointmentById(appointmentId);
+        }
     }
 
-   /*@GetMapping("/id")
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public ResponseEntity<?> getAppointmentById(@RequestParam String appointmentId) {
-        try {
-            Appointment appointment = appointmentService.getAppointmentById(appointmentId);
-            return ResponseEntity.ok().body(appointment);
-        } catch (ObjectNotFoundException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }*/
 }
