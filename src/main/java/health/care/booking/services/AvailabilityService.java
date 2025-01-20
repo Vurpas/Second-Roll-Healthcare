@@ -133,11 +133,20 @@ public class AvailabilityService {
     }
 
     public List<Availability> getAllAvailabilitiesByCaregiverId(String caregiverId) {
+        userRepository.findById(caregiverId)
+                .orElseThrow(() -> new IllegalArgumentException("Caregiver not found"));
+
+        return availabilityRepository.findAvailabilitiesByCaregiverId(caregiverId);
+    }
+
+
+
+    /*public List<Availability> getAllAvailabilitiesByCaregiverId(String caregiverId) {
         if (!userRepository.existsById(caregiverId)) {
             throw new ObjectNotFoundException("The input ID does not match any caregiver");
         } else if (availabilityRepository.findAvailabilitiesByCaregiverId(caregiverId).isEmpty()) {
             throw new ObjectNotFoundException("No availabilites found for this caregiver ID");
         }
         return availabilityRepository.findAvailabilitiesByCaregiverId(caregiverId);
-    }
+    }*/
 }
