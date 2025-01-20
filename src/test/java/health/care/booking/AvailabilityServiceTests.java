@@ -1,8 +1,11 @@
 package health.care.booking;
 
 import health.care.booking.exceptions.ObjectNotFoundException;
+import health.care.booking.models.Appointment;
 import health.care.booking.models.Availability;
 import health.care.booking.models.User;
+import health.care.booking.models.Role;
+import health.care.booking.respository.AppointmentRepository;
 import health.care.booking.respository.AvailabilityRepository;
 import health.care.booking.respository.UserRepository;
 import health.care.booking.services.AvailabilityService;
@@ -15,10 +18,9 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
+import static health.care.booking.models.Role.USER;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -30,6 +32,9 @@ public class AvailabilityServiceTests {
     private UserRepository userRepository;
     @Mock
     private AvailabilityRepository availabilityRepository;
+
+    @Mock
+    private AppointmentRepository appointmentRepository;
 
     @InjectMocks
     private AvailabilityService availabilityService;
@@ -179,6 +184,178 @@ public class AvailabilityServiceTests {
         assertNotNull(result);
         assertFalse(result.getAvailableSlots().contains(newDate)); // Ensure the old slot was not replaced
         verify(availabilityRepository, never()).save(mockAvailability); // Ensure save was not called
+    }
+
+    @Test
+    void testDeleteAvailability_Success() {
+        // Arrange
+        String availabilityId = "123";
+        when(availabilityRepository.existsById(availabilityId)).thenReturn(true);
+
+        // Act
+        String result = availabilityService.deleteAvailability(availabilityId);
+
+        // Assert
+        assertEquals("Availability deleted", result);
+        verify(availabilityRepository, times(1)).deleteById(availabilityId);
+    }
+
+    @Test
+    void testDeleteAvailability_Failure_AvailabilityNotFound() {
+        // Arrange
+        String availabilityId = "123";
+        when(availabilityRepository.existsById(availabilityId)).thenReturn(false);
+
+        // Act & Assert
+        ObjectNotFoundException exception = assertThrows(ObjectNotFoundException.class, () -> {
+            availabilityService.deleteAvailability(availabilityId);
+        });
+        assertEquals("Availability with id: 123 was not found.", exception.getMessage());
+    }
+
+    @Test
+    void testDeleteTimeSlot_Success() {
+        // Arrange
+        String caregiverId = "caregiver123";
+        LocalDateTime timeSlot = LocalDateTime.of(2025, 1, 17, 10, 0);
+        Availability availability = new Availability();
+        availability.setAvailableSlots(new ArrayList<>(List.of(timeSlot)));
+
+        when(availabilityRepository.existsByCaregiverId(caregiverId)).thenReturn(true);
+        when(availabilityRepository.existsByAvailableSlots(timeSlot)).thenReturn(true);
+        when(availabilityRepository.findAvailabilityByAvailableSlotsContaining(timeSlot)).thenReturn(availability);
+
+        // Act
+        String result = availabilityService.deleteTimeSlot(caregiverId, timeSlot);
+
+        // Assert
+        assertEquals("Time slot deleted", result);
+        verify(availabilityRepository, times(1)).deleteByAvailableSlots(timeSlot);
+    }
+
+    @Test
+    void testDeleteTimeSlot_Failure_CaregiverNotFound() {
+        // Arrange
+        String caregiverId = "caregiver123";
+        LocalDateTime timeSlot = LocalDateTime.of(2025, 1, 17, 10, 0);
+
+        when(availabilityRepository.existsByCaregiverId(caregiverId)).thenReturn(false);
+
+        // Act & Assert
+        ObjectNotFoundException exception = assertThrows(ObjectNotFoundException.class, () -> {
+            availabilityService.deleteTimeSlot(caregiverId, timeSlot);
+        });
+        assertEquals("No availabilities for the caregiver with id: caregiver123 was found.", exception.getMessage());
+    }
+
+    @Test
+    void testDeleteTimeSlot_Failure_TimeSlotNotFound() {
+        // Arrange
+        String caregiverId = "caregiver123";
+        LocalDateTime timeSlot = LocalDateTime.of(2025, 1, 17, 10, 0);
+
+        when(availabilityRepository.existsByCaregiverId(caregiverId)).thenReturn(true);
+        when(availabilityRepository.existsByAvailableSlots(timeSlot)).thenReturn(false);
+
+        // Act & Assert
+        ObjectNotFoundException exception = assertThrows(ObjectNotFoundException.class, () -> {
+            availabilityService.deleteTimeSlot(caregiverId, timeSlot);
+        });
+        assertEquals("This time slot: '2025-01-17T10:00' was not found.", exception.getMessage());
+    }
+
+    @Test
+    void testValidateCaregiversTimeSlots_Success() {
+        // Arrange
+        String caregiverId = "caregiver123";
+        LocalDateTime timeSlot = LocalDateTime.of(2025, 1, 17, 10, 0);
+        List<Availability> caregiversAvailabilities = new ArrayList<>();
+        caregiversAvailabilities.add(new Availability(caregiverId, new ArrayList<>(List.of(timeSlot))));
+
+        when(availabilityRepository.findAvailabilitiesByCaregiverId(caregiverId)).thenReturn(caregiversAvailabilities);
+        when(appointmentRepository.findAppointmentByCaregiverIdAndDateTime(any(), eq(timeSlot))).thenReturn(null);
+
+        // Act
+        availabilityService.validateCaregiversTimeSlots(caregiverId, timeSlot);
+
+        // Assert
+        verify(availabilityRepository, times(1)).save(any(Availability.class));
+    }
+
+    @Test
+    void testValidateCaregiversTimeSlots_Failure_TimeSlotAlreadyInAppointment() {
+        // Arrange
+        String caregiverId = "caregiver123";
+        Role role = Role.USER;
+
+        // Create a set with a single role (USER)
+        Set<Role> roles = new HashSet<>();
+        roles.add(role);
+
+
+        LocalDateTime timeSlot = LocalDateTime.of(2025, 1, 17, 10, 0);
+        User user = new User("Sören123", "PW1223", roles, "Sören", "Sörensson", "soren@soren.se", "Sörenstad", "Sörenvägen 1", "0721231212", "19500512");
+        Appointment existingAppointment = new Appointment(user, timeSlot);
+
+        when(availabilityRepository.findAvailabilitiesByCaregiverId(caregiverId)).thenReturn(new ArrayList<>());
+        when(appointmentRepository.findAppointmentByCaregiverIdAndDateTime(user, timeSlot)).thenReturn(existingAppointment);
+
+        // Act & Assert
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            availabilityService.validateCaregiversTimeSlots(caregiverId, timeSlot);
+        });
+        assertEquals("Time slot already exists in a booked appointment", exception.getMessage());
+    }
+
+    @Test
+    void testValidateCaregiversTimeSlots_Failure_TimeSlotAlreadyInAvailability() {
+        // Arrange
+        String caregiverId = "caregiver123";
+        LocalDateTime timeSlot = LocalDateTime.of(2025, 1, 17, 10, 0);
+        List<Availability> caregiversAvailabilities = new ArrayList<>();
+        caregiversAvailabilities.add(new Availability(caregiverId, new ArrayList<>(List.of(timeSlot))));
+
+        when(availabilityRepository.findAvailabilitiesByCaregiverId(caregiverId)).thenReturn(caregiversAvailabilities);
+        when(appointmentRepository.findAppointmentByCaregiverIdAndDateTime(any(), eq(timeSlot))).thenReturn(null);
+
+        // Act & Assert
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            availabilityService.validateCaregiversTimeSlots(caregiverId, timeSlot);
+        });
+        assertEquals("Time slot already exists", exception.getMessage());
+    }
+
+    @Test
+    void testAddTimeSlot_Success() {
+        // Arrange
+        String availabilityId = "availability123";
+        LocalDateTime timeSlot = LocalDateTime.of(2025, 1, 17, 10, 0);
+        Availability availability = new Availability();
+        availability.setAvailableSlots(new ArrayList<>());
+
+        when(availabilityRepository.findAvailabilityById(availabilityId)).thenReturn(availability);
+
+        // Act
+        availabilityService.addTimeSlot(availabilityId, timeSlot);
+
+        // Assert
+        assertTrue(availability.getAvailableSlots().contains(timeSlot));
+        verify(availabilityRepository, times(1)).save(availability);
+    }
+
+    @Test
+    void testAddTimeSlot_Failure_AvailabilityNotFound() {
+        // Arrange
+        String availabilityId = "availability123";
+        LocalDateTime timeSlot = LocalDateTime.of(2025, 1, 17, 10, 0);
+
+        when(availabilityRepository.findAvailabilityById(availabilityId)).thenReturn(null);
+
+        // Act & Assert
+        ObjectNotFoundException exception = assertThrows(ObjectNotFoundException.class, () -> {
+            availabilityService.addTimeSlot(availabilityId, timeSlot);
+        });
+        assertEquals("Availability with id: availability123 was not found.", exception.getMessage());
     }
 
 

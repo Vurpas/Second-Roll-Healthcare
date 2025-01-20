@@ -5,6 +5,7 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Document(collection = "availability")
@@ -21,6 +22,9 @@ public class Availability {
     private List<LocalDateTime> availableSlots;
 
     public Availability() {
+    }
+
+    public Availability(String caregiverId, ArrayList<LocalDateTime> localDateTimes) {
     }
 
     public String getId() {

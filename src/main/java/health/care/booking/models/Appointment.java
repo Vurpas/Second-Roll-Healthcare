@@ -28,6 +28,9 @@ public class Appointment {
 
     }
 
+    public Appointment(User user, LocalDateTime timeSlot) {
+    }
+
     public String getId() {
         return id;
     }

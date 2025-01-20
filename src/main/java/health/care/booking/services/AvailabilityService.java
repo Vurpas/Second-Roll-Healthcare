@@ -86,7 +86,7 @@ public class AvailabilityService {
         if (!availabilityRepository.existsByCaregiverId(caregiverId)) {
             throw new ObjectNotFoundException("No availabilities for the caregiver with id: " + caregiverId + " was found.");
         } else if (!availabilityRepository.existsByAvailableSlots(timeSlot)) {
-            throw new ObjectNotFoundException("This time slot: ''" + timeSlot + "'' was not found.");
+            throw new ObjectNotFoundException("This time slot: '" + timeSlot + "' was not found.");
         } else {
             int index = availabilityRepository.findAvailabilityByAvailableSlotsContaining(timeSlot).getAvailableSlots().indexOf(timeSlot);
             List<LocalDateTime> availableSlots = availabilityRepository
@@ -136,7 +136,7 @@ public class AvailabilityService {
         if (!userRepository.existsById(caregiverId)) {
             throw new ObjectNotFoundException("The input ID does not match any caregiver");
         } else if (availabilityRepository.findAvailabilitiesByCaregiverId(caregiverId).isEmpty()) {
-            throw new ObjectNotFoundException("No availabilites found for this caregiver ID");
+            throw new ObjectNotFoundException("No availabilities found for this caregiver ID");
         }
         return availabilityRepository.findAvailabilitiesByCaregiverId(caregiverId);
     }
