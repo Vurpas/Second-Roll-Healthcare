@@ -55,13 +55,13 @@ public class AppointmentServiceTest {
         MockitoAnnotations.openMocks(this);
 
         // Setup valid AppointmentRequest with available date
-        validAppointmentRequest = new AppointmentRequest(LocalDateTime.of(2025, 1, 20, 10, 0), "100", "1");
+        validAppointmentRequest = new AppointmentRequest(LocalDateTime.of(2025, 1, 20, 10, 0), "100", "1", "Runny nose");
         validAppointmentRequest.setAvailabilityId("1");
         validAppointmentRequest.setPatientId("100");
         validAppointmentRequest.setAppointmentDate(LocalDateTime.of(2025, 1, 20, 10, 0));
 
         // Setup Invalid AppointmentRequest (non-existent availability)
-        invalidAppointmentRequest = new AppointmentRequest(LocalDateTime.of(2025, 1, 20, 10, 0), "100","999");
+        invalidAppointmentRequest = new AppointmentRequest(LocalDateTime.of(2025, 1, 20, 10, 0), "100","999", "Nothing");
         invalidAppointmentRequest.setAvailabilityId("999"); // Invalid ID
         invalidAppointmentRequest.setPatientId("100");
         invalidAppointmentRequest.setAppointmentDate(LocalDateTime.of(2025, 1, 20, 10, 0));

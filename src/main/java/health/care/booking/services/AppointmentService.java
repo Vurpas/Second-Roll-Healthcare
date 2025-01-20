@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -32,6 +33,7 @@ public class AppointmentService {
             Appointment appointment = new Appointment();
             appointment.setCaregiverId(availability.getCaregiverId());
             appointment.setDateTime(appointmentRequest.getAppointmentDate());
+            appointment.setSymptoms(appointmentRequest.getSymptoms());
             appointment.setStatus(Status.SCHEDULED);
             User patientId = userRepository.findById(appointmentRequest.getPatientId())
                     .orElseThrow(() -> new IllegalArgumentException("Patient with ID " + appointmentRequest.getPatientId() + " not found."));
@@ -65,6 +67,7 @@ public class AppointmentService {
         return appointmentRepository.findAll();
     }
 
+    // Get all appointments belonging to a specific user
     public List<Appointment> getAllAppointmentsByUserId(String userId) {
         User user = userRepository.findUserById(userId);
         List<Appointment> foundAppointments = appointmentRepository.findAllByCaregiverIdOrPatientId(user, user);
@@ -73,5 +76,27 @@ public class AppointmentService {
         } else
             foundAppointments.sort(Comparator.comparing(Appointment::getDateTime));
         return foundAppointments;
+    }
+
+    // GET all appointments tied to a specific user, and todays date
+    public List<Appointment> getAllAppointmentsByUserIdAndDate(String userId, String currentDate) {
+        User user = userRepository.findUserById(userId);
+        List<Appointment> todaysAppointments = new ArrayList<>();
+        List<Appointment> foundAppointments = appointmentRepository.findAllByCaregiverIdOrPatientId(user, user);
+        for (Appointment a : foundAppointments) {
+            if (a.getDateTime().toString().contains(currentDate)) {
+                todaysAppointments.add(a);
+            }
+        }
+        todaysAppointments.sort(Comparator.comparing(Appointment::getDateTime));
+        return todaysAppointments;
+    }
+
+    public Appointment getAppointmentById(String appointmentId) {
+        if (!appointmentRepository.existsById(appointmentId)) {
+            throw new ObjectNotFoundException("No appointments found with id: '" + appointmentId + "'");
+        } else {
+            return appointmentRepository.getAppointmentById(appointmentId);
+        }
     }
 }

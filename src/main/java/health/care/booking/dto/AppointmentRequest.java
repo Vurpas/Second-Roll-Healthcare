@@ -7,11 +7,13 @@ public class AppointmentRequest {
     public LocalDateTime appointmentDate;
     public String patientId;
     public String availabilityId;
+    public String symptoms;
 
-    public AppointmentRequest(LocalDateTime appointmentDate, String patientId, String availabilityId) {
+    public AppointmentRequest(LocalDateTime appointmentDate, String patientId, String availabilityId, String symptoms) {
         this.availabilityId = availabilityId;
         this.appointmentDate = appointmentDate;
         this.patientId = patientId;
+        this.symptoms = symptoms;
     }
 
     public LocalDateTime getAppointmentDate() {
@@ -37,5 +39,13 @@ public class AppointmentRequest {
 
     public void setAvailabilityId(String availabilityId) {
         this.availabilityId = availabilityId;
+    }
+
+    public String getSymptoms() {
+        return symptoms;
+    }
+
+    public void setSymptoms(String symptoms) {
+        this.symptoms = symptoms;
     }
 }

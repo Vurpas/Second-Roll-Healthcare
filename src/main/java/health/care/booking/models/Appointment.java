@@ -21,6 +21,8 @@ public class Appointment {
     // tex ett fält för datum ett för tid det är upp till er
     private LocalDateTime dateTime;
 
+    private String symptoms;
+
     // använder Enum Status klassen
     private Status status;
 
@@ -66,5 +68,13 @@ public class Appointment {
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public String getSymptoms() {
+        return symptoms;
+    }
+
+    public void setSymptoms(String symptoms) {
+        this.symptoms = symptoms;
     }
 }

@@ -63,4 +63,27 @@ public class AppointmentController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    // Get a list of all the appointments for that logged in user, with todays date
+    @GetMapping("/getbyidanddate")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    public ResponseEntity<?> getAllAppointmentsByUserIdAndDate(@RequestParam String userId, @RequestParam String currentDate) {
+        try {
+            List<Appointment> allAppointments = appointmentService.getAllAppointmentsByUserIdAndDate(userId, currentDate);
+            return ResponseEntity.ok(allAppointments);
+        } catch (ObjectNotFoundException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/id")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    public ResponseEntity<?> getAppointmentById(@RequestParam String appointmentId) {
+        try {
+            Appointment appointment = appointmentService.getAppointmentById(appointmentId);
+            return ResponseEntity.ok().body(appointment);
+        } catch (ObjectNotFoundException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }
