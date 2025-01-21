@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -75,12 +74,22 @@ public class AppointmentService {
         return foundAppointments;
     }*/
 
-    public Appointment getAppointmentById(String appointmentId) {
-        if (!appointmentRepository.existsById(appointmentId)) {
-            throw new ObjectNotFoundException("No appointments found with id: '" + appointmentId + "'");
+    public List<Appointment> getAppointmentsByUserId(String userId) {
+        if (!appointmentRepository.existsById(userId)) {
+            throw new ObjectNotFoundException("No appointments found with id: '" + userId + "'");
         } else {
-            return appointmentRepository.getAppointmentById(appointmentId);
+            return appointmentRepository.findAllByCaregiverIdOrPatientId(userId);
         }
+
+      /*  public List<Appointment> getAllAppointmentsByUserId(String userId) {
+            User user = userRepository.findUserById(userId);
+            List<Appointment> foundAppointments = appointmentRepository.findAllByCaregiverIdOrPatientId(user, user);
+            if (foundAppointments == null || foundAppointments.isEmpty()) {
+                throw new ObjectNotFoundException("No appointments found for user with id: '" + userId + "'");
+            } else
+                foundAppointments.sort(Comparator.comparing(Appointment::getDateTime));
+            return foundAppointments;
+        }*/
     }
 
 }

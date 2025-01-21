@@ -11,8 +11,9 @@ import java.util.Optional;
 
 @Repository
 public interface AppointmentRepository extends MongoRepository<Appointment, String > {
-   Optional<Appointment> findAppointmentById(String appointmentId);
+   Optional<Appointment> findAppointmentById(String userId);
    Appointment findAppointmentByCaregiverIdAndDateTime(User caregiverId, LocalDateTime dateTime);
-   List<Appointment> findAllByCaregiverIdOrPatientId(User caregiverId, User patientId);
+   List<Appointment> findAllByCaregiverIdOrPatientId(String userId);
+
 
 }
