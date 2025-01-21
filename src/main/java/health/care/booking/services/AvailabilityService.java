@@ -1,8 +1,8 @@
 package health.care.booking.services;
 
 
+import health.care.booking.dto.AvailabilityDTO;
 import health.care.booking.exceptions.ObjectNotFoundException;
-import health.care.booking.models.Appointment;
 import health.care.booking.models.Availability;
 import health.care.booking.models.User;
 import health.care.booking.respository.AppointmentRepository;
@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -26,29 +25,26 @@ public class AvailabilityService {
     AppointmentRepository appointmentRepository;
 
 
-
     //POST
     //skapa create availability metod
     //behöver caregiverId, och available slots
 
     // OBS create error handling for unorthorized attempts to create availability
     // and check that entered availability is not already excisting! OBS
-    public Availability createAvailability (String caregiverId, List<LocalDateTime> availableSlots) {
+    public Availability createAvailability (AvailabilityDTO availabilityDTO) {
 
-        User caregiver = userRepository.findById(caregiverId)
-                .orElseThrow(() -> new IllegalArgumentException("Caregiver with ID " + caregiverId + " not found"));
+        User caregiver = userRepository.findById(availabilityDTO.getCaregiverId())
+                .orElseThrow(() -> new IllegalArgumentException("Caregiver with ID " + availabilityDTO.getCaregiverId() + " not found"));
 
         Availability availability = new Availability();
         availability.setCaregiverId(caregiver);
-        availability.setAvailableSlots(availableSlots);
+        availability.setAvailableSlots(availabilityDTO.getAvailableSlots());
 
         return availabilityRepository.save(availability);
-
     }
 
     //UPDATE
     //uppdatera availabilities baserat på id
-    // TODO: Create error handling for if oldDate does not exist
     public Availability updateAvailability(String availabilityId, LocalDateTime oldDate, LocalDateTime newDate) {
     Availability updatedAvailability = availabilityRepository.findAvailabilityById(availabilityId);
         if (availabilityRepository.existsById(availabilityId)) {
@@ -82,27 +78,32 @@ public class AvailabilityService {
     }
 
     // DELETE specific time slot
-    public String deleteTimeSlot(String caregiverId, LocalDateTime timeSlot) {
-        if (!availabilityRepository.existsByCaregiverId(caregiverId)) {
-            throw new ObjectNotFoundException("No availabilities for the caregiver with id: " + caregiverId + " was found.");
+    public String deleteTimeSlot(String availabilityId, LocalDateTime timeSlot) {
+        if (!availabilityRepository.existsById(availabilityId)) {
+            throw new ObjectNotFoundException("No availabilities with id: " + availabilityId + " was found.");
         } else if (!availabilityRepository.existsByAvailableSlots(timeSlot)) {
             throw new ObjectNotFoundException("This time slot: ''" + timeSlot + "'' was not found.");
         } else {
-            int index = availabilityRepository.findAvailabilityByAvailableSlotsContaining(timeSlot).getAvailableSlots().indexOf(timeSlot);
-            List<LocalDateTime> availableSlots = availabilityRepository
-                    .findAvailabilityByAvailableSlotsContaining(timeSlot).getAvailableSlots();
-            availableSlots.remove(index);
+            availabilityRepository.findAvailabilityById(availabilityId).getAvailableSlots()
+                    .remove(availabilityRepository.findAvailabilityByAvailableSlotsContaining(timeSlot)
+                            .getAvailableSlots().indexOf(timeSlot));
         }
-        availabilityRepository.deleteByAvailableSlots(timeSlot);
         return "Time slot deleted";
     }
+
+    public List<Availability> getAllAvailabilitiesByCaregiverId(String caregiverId) {
+        userRepository.findById(caregiverId)
+                .orElseThrow(() -> new IllegalArgumentException("Caregiver not found"));
+        return availabilityRepository.findAvailabilitiesByCaregiverId(caregiverId);
+    }
+}
 
     // VALIDATE if time slot exists for the caregiver that made the request
     // First it gets all the availabilities linked to a caregiver, then looks if there's an exact copy of the timeslot
     // If not, the next for loop checks the list of available slots on the same date
     // If there is nothing on that date, it creates the availability, otherwise it just adds to the existing
     // availability with the same date and caregiver
-    public void validateCaregiversTimeSlots(String caregiverId, LocalDateTime timeslot) {
+   /* public void validateCaregiversTimeSlots(String caregiverId, LocalDateTime timeslot) {
         List<Availability> caregiversAvailabilities = availabilityRepository.findAvailabilitiesByCaregiverId(caregiverId);
         User user = userRepository.findUserById(caregiverId);
         Appointment appointment = appointmentRepository.findAppointmentByCaregiverIdAndDateTime(user, timeslot);
@@ -130,23 +131,4 @@ public class AvailabilityService {
         Availability availability = availabilityRepository.findAvailabilityById(availabilityId);
         availability.getAvailableSlots().add(timeSlot);
         availabilityRepository.save(availability);
-    }
-
-    public List<Availability> getAllAvailabilitiesByCaregiverId(String caregiverId) {
-        userRepository.findById(caregiverId)
-                .orElseThrow(() -> new IllegalArgumentException("Caregiver not found"));
-
-        return availabilityRepository.findAvailabilitiesByCaregiverId(caregiverId);
-    }
-
-
-
-    /*public List<Availability> getAllAvailabilitiesByCaregiverId(String caregiverId) {
-        if (!userRepository.existsById(caregiverId)) {
-            throw new ObjectNotFoundException("The input ID does not match any caregiver");
-        } else if (availabilityRepository.findAvailabilitiesByCaregiverId(caregiverId).isEmpty()) {
-            throw new ObjectNotFoundException("No availabilites found for this caregiver ID");
-        }
-        return availabilityRepository.findAvailabilitiesByCaregiverId(caregiverId);
-    }*/
-}
+    } */

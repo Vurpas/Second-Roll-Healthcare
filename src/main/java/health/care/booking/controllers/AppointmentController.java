@@ -34,7 +34,7 @@ public class AppointmentController {
 
     // PUT: change the appointment status to CANCELLED
     @PutMapping(value="/cancel/{appointmentId}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<?> cancelAppointment (@PathVariable String appointmentId) {
         try {
             Appointment appointment = appointmentService.cancelAppointment(appointmentId);
