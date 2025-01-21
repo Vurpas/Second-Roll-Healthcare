@@ -72,7 +72,7 @@ public class AppointmentService {
         User user = userRepository.findUserById(userId);
         List<Appointment> foundAppointments = appointmentRepository.findAllByCaregiverIdOrPatientId(user, user);
         if (foundAppointments == null || foundAppointments.isEmpty()) {
-            throw new ObjectNotFoundException("No appointments found for user with id: '" + userId + "'");
+            return foundAppointments;
         } else
             foundAppointments.sort(Comparator.comparing(Appointment::getDateTime));
         return foundAppointments;
