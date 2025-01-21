@@ -3,6 +3,7 @@ package health.care.booking.controllers;
 
 import health.care.booking.dto.AppointmentRequest;
 import health.care.booking.dto.AppointmentResponse;
+import health.care.booking.exceptions.ObjectNotFoundException;
 import health.care.booking.models.Appointment;
 import health.care.booking.services.AppointmentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,12 +64,15 @@ public class AppointmentController {
         }
     }*/
 
-    @GetMapping("/id")
+    @GetMapping("/getbyid")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public ResponseEntity<?> getAppointmentsByUserId(@RequestParam String userId) {
-
-            List<Appointment> appointments = appointmentService.getAppointmentsByUserId(userId);
-            return ResponseEntity.ok().body(appointments);
+    public ResponseEntity<?> getAllAppointmentsByUserId(@RequestParam String userId) {
+        try {
+            List<Appointment> allAppointments = appointmentService.getAllAppointmentsByUserId(userId);
+            return ResponseEntity.ok(allAppointments);
+        } catch (ObjectNotFoundException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
 }
