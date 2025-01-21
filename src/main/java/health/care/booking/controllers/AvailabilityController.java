@@ -1,6 +1,7 @@
 package health.care.booking.controllers;
 
 
+import health.care.booking.dto.AvailabilityDTO;
 import health.care.booking.exceptions.ObjectNotFoundException;
 import health.care.booking.models.Availability;
 import health.care.booking.respository.AvailabilityRepository;
@@ -30,9 +31,10 @@ public class AvailabilityController {
     @PostMapping("/create")
     @PreAuthorize("hasRole('ADMIN')")
     // OBS create error handling for entered availability is not already existing
-    public ResponseEntity<Availability> createAvailability(@RequestParam String caregiverId, @RequestBody List<LocalDateTime> availableSlots){
-        Availability availability = availabilityService.createAvailability(caregiverId, availableSlots);
-        return ResponseEntity.ok(availability);
+    public ResponseEntity<?> createAvailability(@RequestBody AvailabilityDTO availabilityDTO){
+        //AvailabilityDTO availability = availabilityService.createAvailability(availabilityDTO);
+
+       return ResponseEntity.ok( availabilityService.createAvailability(availabilityDTO));
     }
 
     //GET all availabilities
@@ -45,6 +47,7 @@ public class AvailabilityController {
 
     @PatchMapping("/addtimeslot")
     @PreAuthorize("hasRole('ADMIN')")
+    // @RequestParam är ett problem.. måste göra flera request bör vara @PathVariable och gå på id
     public ResponseEntity<?> addTimeSlot(@RequestParam String caregiverId, @RequestParam LocalDateTime timeSlot) {
         try {
             availabilityService.validateCaregiversTimeSlots(caregiverId, timeSlot);
