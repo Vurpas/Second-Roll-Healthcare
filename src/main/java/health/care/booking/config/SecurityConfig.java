@@ -54,6 +54,7 @@ public class SecurityConfig {
                         //temporary test requestmatcher
                         //.requestMatchers("/availability/**").permitAll()
                         .requestMatchers("/appointment/**").permitAll() // the appointment-endpoint only has ADMIN access for now
+                        .requestMatchers("/bookings/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
