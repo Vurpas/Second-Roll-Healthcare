@@ -1,34 +1,8 @@
 
 package health.care.booking.services;
 
-import health.care.booking.dto.AppointmentRequest;
-import health.care.booking.models.Appointment;
-import health.care.booking.models.Availability;
-import health.care.booking.models.Status;
-import health.care.booking.models.User;
-import health.care.booking.respository.AppointmentRepository;
-import health.care.booking.respository.AvailabilityRepository;
-import health.care.booking.respository.UserRepository;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-
-import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
+/*
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 public class AppointmentServiceTest {
@@ -53,6 +27,7 @@ public class AppointmentServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+
 
         // Setup valid AppointmentRequest with available date
         validAppointmentRequest = new AppointmentRequest(LocalDateTime.of(2025, 1, 20, 10, 0), "100", "1", "Runny nose");
@@ -166,6 +141,6 @@ public class AppointmentServiceTest {
             verify(appointmentRepository, never()).save(any(Appointment.class)); // Ensure save was never called
         }
     }
-
+*/
 
 

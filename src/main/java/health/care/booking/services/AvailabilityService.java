@@ -25,12 +25,8 @@ public class AvailabilityService {
     AppointmentRepository appointmentRepository;
 
 
-    //POST
-    //skapa create availability metod
-    //behöver caregiverId, och available slots
+    //POST Create availability
 
-    // OBS create error handling for unorthorized attempts to create availability
-    // and check that entered availability is not already excisting! OBS
     public Availability createAvailability (AvailabilityDTO availabilityDTO) {
 
         User caregiver = userRepository.findById(availabilityDTO.getCaregiverId())
@@ -77,58 +73,28 @@ public class AvailabilityService {
         return "Availability deleted";
     }
 
-    // DELETE specific time slot
-    public String deleteTimeSlot(String availabilityId, LocalDateTime timeSlot) {
-        if (!availabilityRepository.existsById(availabilityId)) {
-            throw new ObjectNotFoundException("No availabilities with id: " + availabilityId + " was found.");
-        } else if (!availabilityRepository.existsByAvailableSlots(timeSlot)) {
-            throw new ObjectNotFoundException("This time slot: ''" + timeSlot + "'' was not found.");
-        } else {
-            availabilityRepository.findAvailabilityById(availabilityId).getAvailableSlots()
-                    .remove(availabilityRepository.findAvailabilityByAvailableSlotsContaining(timeSlot)
-                            .getAvailableSlots().indexOf(timeSlot));
-        }
-        return "Time slot deleted";
-    }
-
     public List<Availability> getAllAvailabilitiesByCaregiverId(String caregiverId) {
         userRepository.findById(caregiverId)
                 .orElseThrow(() -> new IllegalArgumentException("Caregiver not found"));
         return availabilityRepository.findAvailabilitiesByCaregiverId(caregiverId);
     }
-}
 
-    // VALIDATE if time slot exists for the caregiver that made the request
-    // First it gets all the availabilities linked to a caregiver, then looks if there's an exact copy of the timeslot
-    // If not, the next for loop checks the list of available slots on the same date
-    // If there is nothing on that date, it creates the availability, otherwise it just adds to the existing
-    // availability with the same date and caregiver
-   /* public void validateCaregiversTimeSlots(String caregiverId, LocalDateTime timeslot) {
-        List<Availability> caregiversAvailabilities = availabilityRepository.findAvailabilitiesByCaregiverId(caregiverId);
-        User user = userRepository.findUserById(caregiverId);
-        Appointment appointment = appointmentRepository.findAppointmentByCaregiverIdAndDateTime(user, timeslot);
-        if (appointment != null && appointment.getDateTime().equals(timeslot)) {
-            throw new IllegalArgumentException("Time slot already exists in a booked appointment");
-        }
-        for (Availability a : caregiversAvailabilities) {
-            if (a.getAvailableSlots().contains(timeslot)) {
-                throw new IllegalArgumentException("Time slot already exists");
-            }
-        }
-        for (Availability a : caregiversAvailabilities) {
-            if (a.getAvailableSlots().toString().contains(timeslot.toLocalDate().toString())) {
-                addTimeSlot(a.getId(), timeslot);
-                return;
-            }
-        }
-        List<LocalDateTime> availableSlots = new ArrayList<>();
-        availableSlots.add(timeslot);
-        createAvailability(caregiverId, availableSlots);
+    // Check if the time slot exists and is available
+    public boolean isSlotAvailable(String caregiverId, LocalDateTime slot) {
+        return availabilityRepository
+                .findByCaregiverIdAndAvailableSlotsContaining(caregiverId, slot)
+                .isPresent();
     }
 
-    // ADD new timeslot to existing availability
-    public void addTimeSlot(String availabilityId, LocalDateTime timeSlot) {
-        Availability availability = availabilityRepository.findAvailabilityById(availabilityId);
-        availability.getAvailableSlots().add(timeSlot);
+    // DELETE time slot
+    public void removeTimeSlot(String caregiverId, LocalDateTime slot) {
+        Availability availability = availabilityRepository
+                .findByCaregiverIdAndAvailableSlotsContaining(caregiverId, slot)
+                .orElseThrow(() -> new IllegalArgumentException("Slot not found"));
+
+        // If time slot is found, remove from the availability
+        availability.getAvailableSlots().remove(slot);
         availabilityRepository.save(availability);
-    } */
+    }
+}
+

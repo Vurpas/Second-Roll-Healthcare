@@ -5,6 +5,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface AvailabilityRepository extends MongoRepository<Availability, String> {
 
@@ -20,5 +21,6 @@ public interface AvailabilityRepository extends MongoRepository<Availability, St
 
     void deleteByAvailableSlots(LocalDateTime timeSlot);
 
-    //create find
+    Optional<Availability> findByCaregiverIdAndAvailableSlotsContaining(String caregiverId, LocalDateTime slot);
+
 }
