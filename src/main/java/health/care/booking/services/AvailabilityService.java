@@ -25,12 +25,8 @@ public class AvailabilityService {
     AppointmentRepository appointmentRepository;
 
 
-    //POST
-    //skapa create availability metod
-    //behöver caregiverId, och available slots
+    //POST Create availability
 
-    // OBS create error handling for unorthorized attempts to create availability
-    // and check that entered availability is not already excisting! OBS
     public Availability createAvailability (AvailabilityDTO availabilityDTO) {
 
         User caregiver = userRepository.findById(availabilityDTO.getCaregiverId())
@@ -76,21 +72,6 @@ public class AvailabilityService {
         availabilityRepository.deleteById(availabilityId);
         return "Availability deleted";
     }
-    /*
-    // DELETE specific time slot
-    public String deleteTimeSlot(String availabilityId, LocalDateTime timeSlot) {
-        if (!availabilityRepository.existsById(availabilityId)) {
-            throw new ObjectNotFoundException("No availabilities with id: " + availabilityId + " was found.");
-        } else if (!availabilityRepository.existsByAvailableSlots(timeSlot)) {
-            throw new ObjectNotFoundException("This time slot: ''" + timeSlot + "'' was not found.");
-        } else {
-            availabilityRepository.findAvailabilityById(availabilityId).getAvailableSlots()
-                    .remove(availabilityRepository.findAvailabilityByAvailableSlotsContaining(timeSlot)
-                            .getAvailableSlots().indexOf(timeSlot));
-        }
-        return "Time slot deleted";
-    }
-    */
 
     public List<Availability> getAllAvailabilitiesByCaregiverId(String caregiverId) {
         userRepository.findById(caregiverId)

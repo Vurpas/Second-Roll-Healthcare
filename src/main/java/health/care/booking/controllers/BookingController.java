@@ -27,13 +27,5 @@ public class BookingController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(null);
         }
-
-        // om man vill ha "snyggare" syntax, OBS! har ej testat... det kan ni göra om ni vill
-        // eller ta bort det
-       /* return Optional.of(appointmentRequest)
-                .map(bookingCoordinatorService::bookAppointment)
-                .map(ResponseEntity::ok)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Failed to create booking"));*/
-
     }
 }

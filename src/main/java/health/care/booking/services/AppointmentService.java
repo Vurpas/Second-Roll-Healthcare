@@ -45,34 +45,6 @@ public class AppointmentService {
         return appointmentRepository.save(appointment);
     }
 
-    /*
-    public Appointment createAppointment(AppointmentRequest appointmentRequest) {
-        Availability availability = availabilityRepository.findById(appointmentRequest.getAvailabilityId())
-                .orElseThrow(() -> new IllegalArgumentException("Availability with ID " + appointmentRequest.getAvailabilityId() + " not found."));
-            Appointment appointment = new Appointment();
-            appointment.setCaregiverId(availability.getCaregiverId());
-            appointment.setDateTime(appointmentRequest.getAppointmentDate());
-            appointment.setSymptoms(appointmentRequest.getSymptoms());
-            appointment.setStatus(Status.SCHEDULED);
-            User patientId = userRepository.findById(appointmentRequest.getPatientId())
-                    .orElseThrow(() -> new IllegalArgumentException("Patient with ID " + appointmentRequest.getPatientId() + " not found."));
-            appointment.setPatientId(patientId);
-
-            // loops through the available slots and filter out the slots *not* chosen and saves them in a List
-            // the chosen slot is then removed from the List
-            List<LocalDateTime> availableSlots = availability.getAvailableSlots();
-            List<LocalDateTime> dates = availableSlots.stream().filter(element -> !element.isEqual(appointmentRequest.getAppointmentDate())).toList();
-            if (dates.size()<availableSlots.size()) {
-                availability.setAvailableSlots(dates);
-                availabilityRepository.save(availability);
-        } else {
-                throw new IllegalArgumentException("The specified date does not exist");
-            }
-            // Save to database with repository
-            return appointmentRepository.save(appointment);
-    }
-    */
-
     // PUT: Cancel appointment and set appointment status to "CANCELLED"
     public Appointment cancelAppointment(String appointmentId) {
         Appointment appointment = appointmentRepository.findById(appointmentId)

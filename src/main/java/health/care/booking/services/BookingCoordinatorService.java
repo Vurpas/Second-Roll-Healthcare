@@ -15,9 +15,7 @@ public class BookingCoordinatorService {
     @Autowired
     private AppointmentService appointmentService;
 
-    // ny klass som hanterar att koordinera en bokning. själva sparandet av en Appointment
-    // till databasen sköter NewAppointmentService, den här klassen ser bara till att "sätta ihop"
-    // allt.
+    // Class that handles the booking of appointments to make sure appointment and availability is kept separate
     public Appointment bookAppointment(AppointmentRequest appointmentRequest) {
         // Check if slot is available
         if (!availabilityService.isSlotAvailable(appointmentRequest.getCaregiverId(), appointmentRequest.getSelectedSlot())) {
