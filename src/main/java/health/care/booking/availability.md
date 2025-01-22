@@ -25,7 +25,6 @@ hårt kopplat.
 5. För att visa att ni är lite proffs kan vi använda @Transactional som ser till att vi genomför automära operationer
 @Transactional säkerställer att en grupp databasoperationer antingen genomförs helt och hållet eller inte alls - detta kallas "atomicitet".
 
-
 #### skulle behöva göra två custom repository metoder:
 1. findByCaregiverIdAndAvailableSlots
 2. deleteByAvailableSlotsLessThan
@@ -35,6 +34,7 @@ Exempel:
 ```@Query(value = "{'availableSlots': {$lt: ?0}}", delete = true)
     void deleteByAvailableSlotsLessThan(LocalDateTime date);
    ```
+
 MongoDB stödjer cron, kort sagt grejer vi kan köra automatiskt och ställa in när det ska köras:
 ```@Scheduled(cron = "0 0 1 * * *") 
 // Kör 01:00 varje dag
