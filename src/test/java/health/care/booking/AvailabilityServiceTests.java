@@ -274,35 +274,33 @@ public class AvailabilityServiceTests {
         String caregiverId = "caregiver123";
         LocalDateTime timeSlot = LocalDateTime.of(2025, 1, 17, 10, 0);
 
+        // Mock the User object for caregiverId
         User mockUser = mock(User.class);
         when(userRepository.findUserById(caregiverId)).thenReturn(mockUser);
-        when(mockUser.getId()).thenReturn(caregiverId);
 
+        // Mock Availability object with an empty list of available slots
         ArrayList<LocalDateTime> availableSlots = new ArrayList<>();
-
-
         Availability availability = mock(Availability.class);
         when(availability.getAvailableSlots()).thenReturn(availableSlots);
 
+        // Prepare the list of availabilities for the caregiver
         List<Availability> caregiversAvailabilities = new ArrayList<>();
         caregiversAvailabilities.add(availability);
 
+        // Mock availabilityRepository to return the prepared availabilities for the caregiver
         when(availabilityRepository.findAvailabilitiesByCaregiverId(caregiverId)).thenReturn(caregiversAvailabilities);
+
+        // Mock appointmentRepository to return null (no conflicting appointment)
         when(appointmentRepository.findAppointmentByCaregiverIdAndDateTime(any(), eq(timeSlot))).thenReturn(null);
 
-
-
-        System.out.println("Mocked User for caregiverId: " + caregiverId);
-        System.out.println("Mocked User object: " + mockUser);
+        // Mock the userRepository.findById(caregiverId) to return the mockUser
+        when(userRepository.findById(caregiverId)).thenReturn(Optional.of(mockUser));
 
         // Act
-        try {
-            availabilityService.validateCaregiversTimeSlots(caregiverId, timeSlot);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        availabilityService.validateCaregiversTimeSlots(caregiverId, timeSlot);
 
         // Assert
+        // Verify that save() was called exactly once, since we are adding a new availability
         verify(availabilityRepository, times(1)).save(any(Availability.class));
 
     }
@@ -323,13 +321,31 @@ public class AvailabilityServiceTests {
         Appointment existingAppointment = new Appointment(user, timeSlot);
 
         when(availabilityRepository.findAvailabilitiesByCaregiverId(caregiverId)).thenReturn(new ArrayList<>());
-        when(appointmentRepository.findAppointmentByCaregiverIdAndDateTime(user, timeSlot)).thenReturn(existingAppointment);
+
+        when(appointmentRepository.findAppointmentByCaregiverIdAndDateTime(eq(user), eq(timeSlot))).thenReturn(existingAppointment);
+
+        when(userRepository.findUserById(caregiverId)).thenReturn(user);  // Adjust based on your method signature
+
+        // Log to check the mocks
+        System.out.println("User mocked: " + user);
+        System.out.println("Appointment mocked: " + existingAppointment);
 
         // Act & Assert
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            System.out.println("Calling validateCaregiversTimeSlots...");
+            User caregiver = userRepository.findUserById(caregiverId);
+            System.out.println("User found in service: " + caregiver);
+
+            Appointment appointment = appointmentRepository.findAppointmentByCaregiverIdAndDateTime(caregiver, timeSlot);
+            System.out.println("Appointment found in service: " + appointment);  // Log the appointment found
+
             availabilityService.validateCaregiversTimeSlots(caregiverId, timeSlot);
         });
         assertEquals("Time slot already exists in a booked appointment", exception.getMessage());
+
+        // Assert: Ensure the exception message matches the expected error
+        System.out.println("Exception message: " + exception.getMessage());
+
     }
 
     @Test
@@ -337,11 +353,21 @@ public class AvailabilityServiceTests {
         // Arrange
         String caregiverId = "caregiver123";
         LocalDateTime timeSlot = LocalDateTime.of(2025, 1, 17, 10, 0);
+
+
+        ArrayList<LocalDateTime> availableSlots = new ArrayList<>();
+        availableSlots.add(timeSlot);
+
+        Availability availability = mock(Availability.class);
+        when(availability.getAvailableSlots()).thenReturn(availableSlots);
+
+
         List<Availability> caregiversAvailabilities = new ArrayList<>();
-        caregiversAvailabilities.add(new Availability(caregiverId, new ArrayList<>(List.of(timeSlot))));
+        caregiversAvailabilities.add(availability);
 
         when(availabilityRepository.findAvailabilitiesByCaregiverId(caregiverId)).thenReturn(caregiversAvailabilities);
         when(appointmentRepository.findAppointmentByCaregiverIdAndDateTime(any(), eq(timeSlot))).thenReturn(null);
+
 
         // Act & Assert
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
