@@ -1,6 +1,6 @@
 package health.care.booking.controllers;
 
-import health.care.booking.dto.NewAppointmentRequest;
+import health.care.booking.dto.AppointmentRequest;
 import health.care.booking.models.Appointment;
 import health.care.booking.services.BookingCoordinatorService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +19,7 @@ public class BookingController {
 
     // ny controller för att hantera bokning genom BookingCoordinatiorService
     @PostMapping
-    public ResponseEntity<Appointment> bookAppointment(@RequestBody NewAppointmentRequest appointmentRequest) {
+    public ResponseEntity<Appointment> bookAppointment(@RequestBody AppointmentRequest appointmentRequest) {
         try {
             Appointment appointment = bookingCoordinatorService.bookAppointment(appointmentRequest);
             return ResponseEntity.ok(appointment);

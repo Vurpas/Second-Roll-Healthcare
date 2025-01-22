@@ -3,7 +3,6 @@ package health.care.booking.services;
 import health.care.booking.dto.AppointmentRequest;
 import health.care.booking.exceptions.ObjectNotFoundException;
 import health.care.booking.models.Appointment;
-import health.care.booking.models.Availability;
 import health.care.booking.models.Status;
 import health.care.booking.models.User;
 import health.care.booking.respository.AppointmentRepository;
@@ -12,7 +11,6 @@ import health.care.booking.respository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -26,7 +24,28 @@ public class AppointmentService {
     @Autowired
     private AvailabilityRepository availabilityRepository;
 
+
     // POST: create an appointment
+    public Appointment createAppointment(AppointmentRequest appointmentRequest) {
+        // Check if patient and caregiver exists in database
+        User caregiver = userRepository.findById(appointmentRequest.getCaregiverId())
+                .orElseThrow(() -> new IllegalArgumentException("Caregiver not found with ID: " + appointmentRequest.getCaregiverId()));
+
+        User patient = userRepository.findById(appointmentRequest.getPatientId())
+                .orElseThrow(() -> new IllegalArgumentException("Patient not found with ID: " + appointmentRequest.getPatientId()));
+
+        // Then create appointment object with data from the request
+        Appointment appointment = new Appointment();
+        appointment.setCaregiverId(caregiver);
+        appointment.setPatientId(patient);
+        appointment.setStatus(Status.SCHEDULED);
+        appointment.setDateTime(appointmentRequest.getSelectedSlot());
+        appointment.setSymptoms(appointmentRequest.getSymptoms());
+
+        return appointmentRepository.save(appointment);
+    }
+
+    /*
     public Appointment createAppointment(AppointmentRequest appointmentRequest) {
         Availability availability = availabilityRepository.findById(appointmentRequest.getAvailabilityId())
                 .orElseThrow(() -> new IllegalArgumentException("Availability with ID " + appointmentRequest.getAvailabilityId() + " not found."));
@@ -52,7 +71,7 @@ public class AppointmentService {
             // Save to database with repository
             return appointmentRepository.save(appointment);
     }
-
+    */
 
     // PUT: Cancel appointment and set appointment status to "CANCELLED"
     public Appointment cancelAppointment(String appointmentId) {

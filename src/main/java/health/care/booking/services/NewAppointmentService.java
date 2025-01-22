@@ -1,6 +1,6 @@
 package health.care.booking.services;
 
-import health.care.booking.dto.NewAppointmentRequest;
+import health.care.booking.dto.AppointmentRequest;
 import health.care.booking.models.Appointment;
 import health.care.booking.models.User;
 import health.care.booking.respository.AppointmentRepository;
@@ -18,8 +18,7 @@ public class NewAppointmentService {
     @Autowired
     private UserRepository userRepository;
 
-    // valde annat namn är createApp... så det inte skulle bli helt förvirrande
-    public Appointment newAppointment(NewAppointmentRequest request) {
+    public Appointment newAppointment(AppointmentRequest request) {
         // kollar först om caregiver och patient finns i databasen
         User caregiver = userRepository.findById(request.getCaregiverId())
                 .orElseThrow(() -> new IllegalArgumentException("Caregiver not found with ID: " + request.getCaregiverId()));
@@ -30,7 +29,7 @@ public class NewAppointmentService {
         Appointment appointment = new Appointment();
         appointment.setCaregiverId(caregiver);
         appointment.setPatientId(patient);
-        // sätter sloten baserat på det som kommer ifrån requesten
+
         appointment.setDateTime(request.getSelectedSlot());
 
         return appointmentRepository.save(appointment);

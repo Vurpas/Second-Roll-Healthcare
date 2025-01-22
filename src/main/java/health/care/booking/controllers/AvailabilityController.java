@@ -67,6 +67,7 @@ public class AvailabilityController {
         }
     }
 
+    /*
     // DELETE
     // DELETE a SPECIFIC timeslot based on the caregiverID and the timeSlot entered
     @DeleteMapping("/deletetimeslot/{availabilityId}")
@@ -78,7 +79,7 @@ public class AvailabilityController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-
+    */
     @GetMapping("/{caregiverId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public ResponseEntity<?> getAllAvailabilitiesByCaregiverId(@PathVariable String caregiverId) {
