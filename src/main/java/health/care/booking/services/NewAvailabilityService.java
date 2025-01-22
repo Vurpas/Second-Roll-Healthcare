@@ -20,7 +20,7 @@ public class NewAvailabilityService {
     // utan varje metod utför en uppgift
 
     // hjälpmetod men ej privat eftersom den här används i den nya BookingCoordinatior servicen
-    // för att ta bort en slit behövs ett caregiverId och en slot av typen LocalDateTime
+    // för att ta bort en slot behövs ett caregiverId och en slot av typen LocalDateTime
     public void removeTimeSlot(String caregiverId, LocalDateTime slot) {
         Availability availability = newAvailabilityRepository
                 // använder custom metoden här
