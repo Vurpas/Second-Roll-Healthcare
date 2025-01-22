@@ -1,6 +1,7 @@
 package health.care.booking.controllers;
 
 
+import health.care.booking.dto.AvailabilityDTO;
 import health.care.booking.exceptions.ObjectNotFoundException;
 import health.care.booking.models.Availability;
 import health.care.booking.respository.AvailabilityRepository;
@@ -14,11 +15,9 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
-//skall det vara Restcontroller och RequestMapping anotations här?
 @RestController
 @RequestMapping(value ="/availability")
 public class AvailabilityController {
-    //Autowirea availabilityService och AvailabilityRepository?
     @Autowired
     AvailabilityService availabilityService;
     @Autowired
@@ -26,12 +25,11 @@ public class AvailabilityController {
     @Autowired
     AvailabilityRepository availabilityRepository;
 
-
-    @PostMapping("/create")
+    // POST: Create availability
+    @PostMapping()
     @PreAuthorize("hasRole('ADMIN')")
-    // OBS create error handling for entered availability is not already existing
-    public ResponseEntity<Availability> createAvailability(@RequestParam String caregiverId, @RequestBody List<LocalDateTime> availableSlots){
-        Availability availability = availabilityService.createAvailability(caregiverId, availableSlots);
+    public ResponseEntity<Availability> createAvailability(@RequestBody AvailabilityDTO availabilityDTO){
+        Availability availability = availabilityService.createAvailability(availabilityDTO);
         return ResponseEntity.ok(availability);
     }
 
@@ -43,23 +41,12 @@ public class AvailabilityController {
         return ResponseEntity.ok(allAvailabilities);
     }
 
-    @PatchMapping("/addtimeslot")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> addTimeSlot(@RequestParam String caregiverId, @RequestParam LocalDateTime timeSlot) {
-        try {
-            availabilityService.validateCaregiversTimeSlots(caregiverId, timeSlot);
-        } catch (IllegalArgumentException e){
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-        return ResponseEntity.ok("Time slot added: '" + timeSlot + "' ");
-    }
-
     // PUT - Update availability
     // A caregiver can change the time or date on the availability.
-    @PutMapping("/update")
+    @PutMapping("/update/{availabilityId}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> updateAvailability
-    (@RequestParam String availabilityId, @RequestParam LocalDateTime oldDate, @RequestParam LocalDateTime newDate) {
+    (@PathVariable String availabilityId, @RequestBody LocalDateTime oldDate, @RequestBody LocalDateTime newDate) {
         try {
             Availability updatedAvailability = availabilityService.updateAvailability(availabilityId, oldDate, newDate);
             return ResponseEntity.ok(updatedAvailability);
@@ -70,9 +57,9 @@ public class AvailabilityController {
 
     //DELETE - Two Delete availability methods, one based on Id and one based on Date
     // DELETE ENTIRE AVAILABILITY BASED ON ID
-    @DeleteMapping("/delete")
+    @DeleteMapping("/deleteavailability/{availabilityId}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> deleteAvailability(@RequestParam String availabilityId) {
+    public ResponseEntity<?> deleteAvailability(@PathVariable String availabilityId) {
         try {
             return ResponseEntity.ok(availabilityService.deleteAvailability(availabilityId));
         } catch (ObjectNotFoundException e) {
@@ -82,25 +69,20 @@ public class AvailabilityController {
 
     // DELETE
     // DELETE a SPECIFIC timeslot based on the caregiverID and the timeSlot entered
-    @DeleteMapping("/delete/timeslot")
+    @DeleteMapping("/deletetimeslot/{availabilityId}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> deleteTimeslot(@RequestParam String caregiverId, @RequestParam LocalDateTime timeSlot) {
+    public ResponseEntity<?> deleteTimeslot(@PathVariable String availabilityId, @RequestBody LocalDateTime timeSlot) {
         try {
-            return ResponseEntity.ok(availabilityService.deleteTimeSlot(caregiverId, timeSlot));
+            return ResponseEntity.ok(availabilityService.deleteTimeSlot(availabilityId, timeSlot));
         } catch (ObjectNotFoundException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-    //GET hämta alla availabilities för specifik vårdgivare baserat på userId
-    @GetMapping("/findbyid")
+    @GetMapping("/{caregiverId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
-    public ResponseEntity<?> getAllAvailabilitiesByCaregiverId(@RequestParam String caregiverId) {
-        try {
-            List<Availability> foundAvailabilities = availabilityService.getAllAvailabilitiesByCaregiverId(caregiverId);
-            return ResponseEntity.ok(foundAvailabilities);
-        } catch (ObjectNotFoundException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<?> getAllAvailabilitiesByCaregiverId(@PathVariable String caregiverId) {
+        List<Availability> foundAvailabilities = availabilityService.getAllAvailabilitiesByCaregiverId(caregiverId);
+        return ResponseEntity.ok(foundAvailabilities);
     }
 }
