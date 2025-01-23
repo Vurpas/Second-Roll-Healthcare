@@ -2,6 +2,7 @@ package health.care.booking.controllers;
 
 
 import health.care.booking.dto.AvailabilityDTO;
+import health.care.booking.dto.RemoveTimeSlotRequest;
 import health.care.booking.exceptions.ObjectNotFoundException;
 import health.care.booking.models.Availability;
 import health.care.booking.respository.AvailabilityRepository;
@@ -65,6 +66,19 @@ public class AvailabilityController {
         } catch (ObjectNotFoundException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+
+    //DELETE delete single timeslot, needed in caregiver Calendar
+    @DeleteMapping("/removetimeslot")
+    public ResponseEntity<String> removeTimeslot(@RequestBody RemoveTimeSlotRequest removeTimeSlotRequest) {
+ try{
+     availabilityService.removeTimeSlot(removeTimeSlotRequest.getCaregiverId(), removeTimeSlotRequest.getSelectedSlot());
+     return ResponseEntity.ok("Timeslot successfully removed ");
+ } catch (IllegalArgumentException e) {
+     return ResponseEntity.badRequest().body(e.getMessage());
+ }catch (Exception e) {
+     return ResponseEntity.internalServerError().body("unexpected error occurred");
+ }
     }
 
     @GetMapping("/{caregiverId}")
