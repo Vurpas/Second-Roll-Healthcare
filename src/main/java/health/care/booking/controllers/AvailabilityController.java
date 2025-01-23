@@ -70,7 +70,13 @@ public class AvailabilityController {
 
     //DELETE delete single timeslot, needed in caregiver Calendar
     @DeleteMapping("/removetimeslot")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> removeTimeslot(@RequestBody RemoveTimeSlotRequest removeTimeSlotRequest) {
+
+        System.out.println("Received request to remove timeslot: CaregiverId = "
+                + removeTimeSlotRequest.getCaregiverId()
+                + ", SelectedSlot = "
+                + removeTimeSlotRequest.getSelectedSlot());
  try{
      availabilityService.removeTimeSlot(removeTimeSlotRequest.getCaregiverId(), removeTimeSlotRequest.getSelectedSlot());
      return ResponseEntity.ok("Timeslot successfully removed ");
