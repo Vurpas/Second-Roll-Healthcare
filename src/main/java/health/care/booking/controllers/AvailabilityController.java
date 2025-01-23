@@ -67,18 +67,6 @@ public class AvailabilityController {
         }
     }
 
-    // DELETE
-    // DELETE a SPECIFIC timeslot based on the caregiverID and the timeSlot entered
-    @DeleteMapping("/deletetimeslot/{availabilityId}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> deleteTimeslot(@PathVariable String availabilityId, @RequestBody LocalDateTime timeSlot) {
-        try {
-            return ResponseEntity.ok(availabilityService.deleteTimeSlot(availabilityId, timeSlot));
-        } catch (ObjectNotFoundException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
-
     @GetMapping("/{caregiverId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public ResponseEntity<?> getAllAvailabilitiesByCaregiverId(@PathVariable String caregiverId) {
