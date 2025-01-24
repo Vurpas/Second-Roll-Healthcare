@@ -202,25 +202,91 @@ public class AvailabilityServiceTests {
         verify(availabilityRepository, times(0)).deleteById(availabilityId);  // delete should not be called
     }
 
+    private String caregiverId;
+    private LocalDateTime slot;
+    private Availability availability;
+
+    private User caregiver;
+
+
     @Test
     public void testRemoveTimeSlot_Success() {
-        String caregiverId = "caregiver123"; // Example caregiverId
-        List<LocalDateTime> slot = new ArrayList<>();
+        caregiverId = "caregiver123"; // Example caregiverId
+
+        List<LocalDateTime> availableSlots =new ArrayList<>(Arrays.asList(LocalDateTime.of(2025, 1, 16, 14, 0)));
+        slot = LocalDateTime.of(2025, 1, 23, 10, 0);
+
+        caregiver = new User();
+        caregiver.setId(caregiverId);
 
         // Create an availability object with a time slot
-        Availability availability = new Availability();
-        availability.setCaregiverId(new User()); // Assuming your availability has a User reference for caregiverId
-        availability.setAvailableSlots(slot);
+        availability = new Availability();
+        availability.setCaregiverId(caregiver);
+        availability.setAvailableSlots(availableSlots);
         availability.getAvailableSlots().add(slot); // Add the time slot
+
+            // Arrange: Mock the repository to return availability with the slot
+            when(availabilityRepository.findByCaregiverIdAndAvailableSlotsContaining(caregiverId, slot))
+                    .thenReturn(Optional.of(availability));
+
+        // Mock the save behavior: Ensure save is called and reflect the updated list
+        when(availabilityRepository.save(any(Availability.class)))
+                .thenReturn(availability); // Return the updated availability object after removal
+
+        // Act: Call removeTimeSlot
+            availabilityService.removeTimeSlot(caregiverId, slot);
+
+        // Assert: Verify the time slot was removed and repository.save was called
+        // Verify that the slot was removed and only the other slot remains
+        assertEquals(1, availability.getAvailableSlots().size()); // List should contain exactly 1 slot
+        assertTrue(availability.getAvailableSlots().contains(LocalDateTime.of(2025, 1, 16, 14, 0))); // The remaining slot
+        verify(availabilityRepository, times(1)).save(availability); // Verify that the save method was called once
     }
 
+    @Test
+    public void testRemoveTimeSlot_Fail_SlotNotFound() {
+        // Setup the test data
+        caregiverId = "caregiver123"; // Example caregiverId
+
+        // Define the available slot and the slot to remove (we will try to remove a slot that is not in the list)
+        List<LocalDateTime> availableSlots = new ArrayList<>(Arrays.asList(LocalDateTime.of(2025, 1, 16, 14, 0))); // Slot that exists
+        LocalDateTime slotToRemove = LocalDateTime.of(2025, 1, 23, 10, 0); // Slot we want to remove but doesn't exist in the list
+
+        // Create the Availability and User objects
+        caregiver = new User(); // Create a new User for the caregiver
+        caregiver.setId(caregiverId); // Assuming you have an ID field in your User class
+
+        availability = new Availability(); // Create a new Availability object
+        availability.setCaregiverId(caregiver); // Set the caregiver reference
+        availability.setAvailableSlots(availableSlots); // Set the available slots
+
+        // Log the available slots before removal
+        System.out.println("Before removal - Slots: " + availability.getAvailableSlots());
+        System.out.println("Slot to remove: " + slotToRemove);
+
+        // Arrange: Mock the repository to simulate the case when the slot is not found
+        when(availabilityRepository.findByCaregiverIdAndAvailableSlotsContaining(caregiverId, slotToRemove))
+                .thenReturn(Optional.empty()); // Simulate that the slot is not found
 
 
+        // Act and Assert: Verify that the exception is thrown when trying to remove a non-existing slot
+        IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class, () -> {
+            availabilityService.removeTimeSlot(caregiverId, slotToRemove); // This should throw an exception
+        });
 
+        // Check the exception message
+        assertEquals("Slot not found", thrown.getMessage()); // Check that the error message is correct
 
+        // Verify that the repository save was not called (since the removal didn't happen)
+        verify(availabilityRepository, times(0)).save(any(Availability.class)); // save should not be called
 
+        // Additional Debugging: Verify that the mock method was indeed called
+        verify(availabilityRepository, times(1)).findByCaregiverIdAndAvailableSlotsContaining(caregiverId, slotToRemove); // Ensure the mock was triggered
 
+        // Debugging: Print the slots again to confirm the state during the test
+        System.out.println("After mock repository call - Slots: " + availability.getAvailableSlots());
 
-
+    }
 }
+
 
