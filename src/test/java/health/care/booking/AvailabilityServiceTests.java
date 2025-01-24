@@ -2,9 +2,11 @@ package health.care.booking;
 
 import health.care.booking.exceptions.ObjectNotFoundException;
 import health.care.booking.models.Availability;
+import health.care.booking.models.User;
 import health.care.booking.respository.AvailabilityRepository;
 import health.care.booking.respository.UserRepository;
 import health.care.booking.services.AvailabilityService;
+import health.care.booking.dto.AvailabilityDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,9 +16,9 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
+import static java.util.Collections.list;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -29,6 +31,8 @@ public class AvailabilityServiceTests {
     @Mock
     private AvailabilityRepository availabilityRepository;
 
+    private AvailabilityDTO availabilityDTO;
+
     @InjectMocks
     private AvailabilityService availabilityService;
 
@@ -40,83 +44,70 @@ public class AvailabilityServiceTests {
     /**
      * test createAvailability method to ensure that availabilty is created correct
      * */
-    /* @Test
+    @Test
     public void testCreateAvailability_Success() {
-        // arrange
-        // create sample availability data for user and availabilitySlots
+        // Arrange
+        User caregiver = new User();
+        caregiver.setId("1");
+        caregiver.setFirstName("John");
+        caregiver.setLastName("Doe");
+        List<LocalDateTime> list = new ArrayList<>();
 
-        // example caregiverId
-        String caregiverId = "12345";
-        // mock availableSlots
-        List<LocalDateTime> availableSlots = Arrays.asList(
-                LocalDateTime.of(2025,1,13,10,0),
-                LocalDateTime.of(2025,1,13,13,0)
-        );
+        // Ensure availabilityDTO is properly initialized
+        availabilityDTO = new AvailabilityDTO(caregiver.getId(), list);
+        availabilityDTO.setCaregiverId("1"); // Set valid caregiver ID
+        availabilityDTO.setAvailableSlots(list); // Set available slots
 
-        // creating a mock caregiver as a User object
-        User mockCareGiver = new User();
-        mockCareGiver.setId(caregiverId);
+        // Mock behavior for userRepository
+        when(userRepository.findById("1")).thenReturn(Optional.of(caregiver));
 
-        // creating a mock availability object
-        Availability mockAvailability = new Availability();
-        mockAvailability.setCaregiverId(mockCareGiver);
-        mockAvailability.setAvailableSlots(availableSlots);
+        // Mock behavior for availabilityRepository
+        Availability availability = new Availability();
+        availability.setCaregiverId(caregiver);
+        availability.setAvailableSlots(availabilityDTO.getAvailableSlots());
 
-        // mocking the behavior of userRepository.findById and return a mock caregiver
-        when(userRepository.findById(caregiverId)).thenReturn(Optional.of(mockCareGiver));
-        // mocking the behavior of availabilityRepository.save and return the mock availability
-        when(availabilityRepository.save(any(Availability.class))).thenReturn(mockAvailability);
+        when(availabilityRepository.save(any(Availability.class))).thenReturn(availability);
 
+        // Act
+        Availability result = availabilityService.createAvailability(availabilityDTO);
 
-        // act
-        // calling the method during test
-        Availability result = availabilityService.createAvailability(caregiverId, availableSlots);
-
-        // assert
-        // verify the results
-        // check that the result is not null
+        // Assert
         assertNotNull(result);
-        // check that caregiverId has a match
-        assertEquals(caregiverId, result.getCaregiverId().getId());
-        // check that availableSlots match
-        assertEquals(availableSlots, result.getAvailableSlots());
-
-        // verify that the findById method is called just one time with correct caregiverId
-        verify(userRepository, times(1)).findById(caregiverId);
-        // verify that the save method is called just one time with any availability object
+        assertEquals(caregiver, result.getCaregiverId());
+        assertEquals(availabilityDTO.getAvailableSlots(), result.getAvailableSlots());
+        verify(userRepository, times(1)).findById("1");
         verify(availabilityRepository, times(1)).save(any(Availability.class));
     }
 
+
     @Test
     public void testCreateAvailability_CaregiverNotFound() {
-        // arrange
-        // setting up test data
+        // Arrange
+        User caregiver = new User();
+        caregiver.setId("1");
+        caregiver.setFirstName("John");
+        caregiver.setLastName("Doe");
+        List<LocalDateTime> list = new ArrayList<>();
 
-        //non-existing caregiverId
-        String caregiverId = "nonexistent";
-        List<LocalDateTime> availableSlots = Arrays.asList(
-                LocalDateTime.of(2025,1,13,10,0),
-                LocalDateTime.of(2025,1,13,13,0)
-        );
-        // mock the behavior of userRepository.findById to return an empty Optional
-        when(userRepository.findById(caregiverId)).thenReturn(Optional.empty());
+        // Ensure availabilityDTO is properly initialized
+        availabilityDTO = new AvailabilityDTO(caregiver.getId(), list);
+        availabilityDTO.setCaregiverId("1"); // Set valid caregiver ID
+        availabilityDTO.setAvailableSlots(list); // Set available slots
 
-        // act & assert
-        // verify that an exception is thrown
-        Exception exception = assertThrows(IllegalArgumentException.class, () ->
-                // calls the method
-                availabilityService.createAvailability(caregiverId, availableSlots)
-        );
+        // Arrange
+        when(userRepository.findById("1")).thenReturn(Optional.empty());
 
-        // check exception message
-        assertEquals("Caregiver with ID nonexistent not found", exception.getMessage());
+        // Act & Assert
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            availabilityService.createAvailability(availabilityDTO);
+        });
 
-        // verify that the findById method only gets called one time
-        verify(userRepository, times(1)).findById(caregiverId);
+        // Assert
+        assertEquals("Caregiver with ID 1 not found", exception.getMessage());
+        verify(userRepository, times(1)).findById("1");
+        verify(availabilityRepository, times(0)).save(any(Availability.class));
+    }
 
-        // verify that the save method in availability repository never gets called
-        verifyNoInteractions(availabilityRepository);
-    } */
 
     @Test
     void testUpdateAvailability_Success() {
@@ -179,15 +170,123 @@ public class AvailabilityServiceTests {
         verify(availabilityRepository, never()).save(mockAvailability); // Ensure save was not called
     }
 
+    @Test
+    public void testDeleteAvailability_Success() {
+
+        String availabilityId = "avail123";
+
+        // Arrange
+        when(availabilityRepository.existsById(availabilityId)).thenReturn(true);
+
+        // Act
+        String result = availabilityService.deleteAvailability(availabilityId);
+
+        // Assert
+        assertEquals("Availability deleted", result);
+        verify(availabilityRepository, times(1)).deleteById(availabilityId);
+    }
+
+    @Test
+    public void testDeleteAvailability_NotFound() {
+        // Arrange
+        String availabilityId = "avail123";
+        when(availabilityRepository.existsById(availabilityId)).thenReturn(false);
+
+        // Act & Assert
+        ObjectNotFoundException exception = assertThrows(ObjectNotFoundException.class, () -> {
+            availabilityService.deleteAvailability(availabilityId);
+        });
+
+        // Assert
+        assertEquals("Availability with id: " + availabilityId + " was not found.", exception.getMessage());
+        verify(availabilityRepository, times(0)).deleteById(availabilityId);  // delete should not be called
+    }
+
+    private String caregiverId;
+    private LocalDateTime slot;
+    private Availability availability;
+
+    private User caregiver;
 
 
+    @Test
+    public void testRemoveTimeSlot_Success() {
+        caregiverId = "caregiver123"; // Example caregiverId
+
+        List<LocalDateTime> availableSlots =new ArrayList<>(Arrays.asList(LocalDateTime.of(2025, 1, 16, 14, 0)));
+        slot = LocalDateTime.of(2025, 1, 23, 10, 0);
+
+        caregiver = new User();
+        caregiver.setId(caregiverId);
+
+        // Create an availability object with a time slot
+        availability = new Availability();
+        availability.setCaregiverId(caregiver);
+        availability.setAvailableSlots(availableSlots);
+        availability.getAvailableSlots().add(slot); // Add the time slot
+
+            // Arrange: Mock the repository to return availability with the slot
+            when(availabilityRepository.findByCaregiverIdAndAvailableSlotsContaining(caregiverId, slot))
+                    .thenReturn(Optional.of(availability));
+
+        // Mock the save behavior: Ensure save is called and reflect the updated list
+        when(availabilityRepository.save(any(Availability.class)))
+                .thenReturn(availability); // Return the updated availability object after removal
+
+        // Act: Call removeTimeSlot
+            availabilityService.removeTimeSlot(caregiverId, slot);
+
+        // Assert: Verify the time slot was removed and repository.save was called
+        // Verify that the slot was removed and only the other slot remains
+        assertEquals(1, availability.getAvailableSlots().size()); // List should contain exactly 1 slot
+        assertTrue(availability.getAvailableSlots().contains(LocalDateTime.of(2025, 1, 16, 14, 0))); // The remaining slot
+        verify(availabilityRepository, times(1)).save(availability); // Verify that the save method was called once
+    }
+
+    @Test
+    public void testRemoveTimeSlot_Fail_SlotNotFound() {
+        // Setup the test data
+        caregiverId = "caregiver123"; // Example caregiverId
+
+        // Define the available slot and the slot to remove (we will try to remove a slot that is not in the list)
+        List<LocalDateTime> availableSlots = new ArrayList<>(Arrays.asList(LocalDateTime.of(2025, 1, 16, 14, 0))); // Slot that exists
+        LocalDateTime slotToRemove = LocalDateTime.of(2025, 1, 23, 10, 0); // Slot we want to remove but doesn't exist in the list
+
+        // Create the Availability and User objects
+        caregiver = new User(); // Create a new User for the caregiver
+        caregiver.setId(caregiverId); // Assuming you have an ID field in your User class
+
+        availability = new Availability(); // Create a new Availability object
+        availability.setCaregiverId(caregiver); // Set the caregiver reference
+        availability.setAvailableSlots(availableSlots); // Set the available slots
+
+        // Log the available slots before removal
+        System.out.println("Before removal - Slots: " + availability.getAvailableSlots());
+        System.out.println("Slot to remove: " + slotToRemove);
+
+        // Arrange: Mock the repository to simulate the case when the slot is not found
+        when(availabilityRepository.findByCaregiverIdAndAvailableSlotsContaining(caregiverId, slotToRemove))
+                .thenReturn(Optional.empty()); // Simulate that the slot is not found
 
 
+        // Act and Assert: Verify that the exception is thrown when trying to remove a non-existing slot
+        IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class, () -> {
+            availabilityService.removeTimeSlot(caregiverId, slotToRemove); // This should throw an exception
+        });
 
+        // Check the exception message
+        assertEquals("Slot not found", thrown.getMessage()); // Check that the error message is correct
 
+        // Verify that the repository save was not called (since the removal didn't happen)
+        verify(availabilityRepository, times(0)).save(any(Availability.class)); // save should not be called
 
+        // Additional Debugging: Verify that the mock method was indeed called
+        verify(availabilityRepository, times(1)).findByCaregiverIdAndAvailableSlotsContaining(caregiverId, slotToRemove); // Ensure the mock was triggered
 
+        // Debugging: Print the slots again to confirm the state during the test
+        System.out.println("After mock repository call - Slots: " + availability.getAvailableSlots());
 
-
+    }
 }
+
 
