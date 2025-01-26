@@ -73,18 +73,9 @@ public class AvailabilityController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> removeTimeslot(@RequestBody RemoveTimeSlotRequest removeTimeSlotRequest) {
 
-        System.out.println("Received request to remove timeslot: CaregiverId = "
-                + removeTimeSlotRequest.getCaregiverId()
-                + ", SelectedSlot = "
-                + removeTimeSlotRequest.getSelectedSlot());
- try{
-     availabilityService.removeTimeSlot(removeTimeSlotRequest.getCaregiverId(), removeTimeSlotRequest.getSelectedSlot());
-     return ResponseEntity.ok("Timeslot successfully removed ");
- } catch (IllegalArgumentException e) {
-     return ResponseEntity.badRequest().body(e.getMessage());
- }catch (Exception e) {
-     return ResponseEntity.internalServerError().body("unexpected error occurred");
- }
+            availabilityService.removeTimeSlot(removeTimeSlotRequest.getCaregiverId(), removeTimeSlotRequest.getSelectedSlot());
+            return ResponseEntity.ok("Timeslot successfully removed ");
+
     }
 
     @GetMapping("/{caregiverId}")
